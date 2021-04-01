@@ -20,7 +20,7 @@ To learn how to **develop** your own federated tool using the **HyFed** API, ple
 To **run** the **HyFed** framework, please see [HyFed-Run](hyfed-docs/readme/run_hyfed.md). 
 
 ## License
-The HyFed source code is licensed under the Apache License Version 2.0. (C) 2021, the HyFed developers.
+The **HyFed** source code is licensed under the Apache License Version 2.0. (C) 2021, the **HyFed** developers.
 
 ## Citation
 If you use the **HyFed** framework in your study, please cite it as follows: <br />
@@ -33,7 +33,7 @@ If you use the **HyFed** framework in your study, please cite it as follows: <br
     }
    ```
 ## Contact
-In case of questions or problems regarding HyFed, please contact the HyFed developers: Reza Nasirigerdeh, Reihaneh Torkzadehmahani, and Julian Matschinske.
+In case of questions or problems regarding **HyFed**, please contact the **HyFed** developers: Reza Nasirigerdeh, Reihaneh Torkzadehmahani, and Julian Matschinske.
 
 ## Disclaimer
 
