@@ -1,6 +1,6 @@
 # HyFed Framework
 
-## _Hybrid, Federated Framework for Privacy-preserving Machine Learning_
+## __Hybrid, Federated Framework for Privacy-preserving Machine Learning__
 
 <p float="left">
 <img src="hyfed-docs/readme/img/main/hyfed_logo.png" width="180" height="60">
