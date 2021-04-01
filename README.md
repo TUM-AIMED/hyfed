@@ -3,7 +3,8 @@
 ## _Hybrid, Federated Framework for Privacy-preserving Machine Learning_
 
 <p float="left">
-<img src="hyfed-docs/readme/img/main/hyfed_logo.png" width="200" height="115">
+<img src="hyfed-docs/readme/img/main/hyfed_logo.png" width="180" height="60">
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="hyfed-docs/readme/img/main/tum_logo.png" width="100" height="50">
 </p>
 
