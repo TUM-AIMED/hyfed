@@ -1,0 +1,147 @@
+<section class="hero is-primary is-small">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <section class="section">
+        <h1 class="title">
+          <span *ngIf="!project">
+            <i class="fa fa-spinner"></i> <i>Loading...</i></span>
+          <span *ngIf="project">
+            <i class="fa fa-flask"></i> Project {{project.name}} </span>
+        </h1>
+      </section>
+    </div>
+  </div>
+</section>
+
+<div class="container is-fluid" *ngIf="project">
+  <section class="section">
+
+    <!-- Project summary panel at the top of the page -->
+    <div class="card" *ngIf="tokens !== null">
+      <div class="card-content">
+        <div class="content">
+          <h3>Project Summary</h3>
+          <p>
+            ID: {{project.id}}
+          </p>
+          <p>
+            Tool: {{project.tool}}
+          </p>
+
+          <p>
+            Algorithm: {{project.algorithm}}
+          </p>
+
+          <p>
+            Name: {{project.name}}
+          </p>
+
+          <p>
+            Description: {{project.description}}
+          </p>
+
+          <p>
+            Status: {{project.status}}
+          </p>
+
+          <p>
+            Step: {{project.step}}
+          </p>
+
+          <p>
+            Communication round: {{project.commRound}}
+          </p>
+
+          <!-- BEGIN Stats SPECIFIC (HYPER-)PARAMETER VALUES -->
+          <p *ngIf="project.tool == 'Stats'">
+            Features: {{project.features}}
+          </p>
+
+          <p *ngIf="project.tool == 'Stats' && project.algorithm == 'Logistic-Regression'">
+            Learning rate: {{project.learningRate}}
+          </p>
+
+          <p *ngIf="project.tool == 'Stats' && project.algorithm == 'Logistic-Regression'">
+            Max iterations: {{project.maxIterations}}
+          </p>
+          <!-- END Stats SPECIFIC (HYPER-)PARAMETER VALUES -->
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Result panel -->
+    <div class="card" *ngIf="project.status !== 'Created'">
+      <div class="card-content">
+        <div class="content">
+          <div class="control is-pulled-right">
+            <a class="button" [href]="downloadLink">
+              <span class="icon"><i class="fa fa-download"></i></span>
+              <span>Download as .zip</span>
+            </a>
+          </div>
+          <h3>Project Result</h3>
+
+        </div>
+        <div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Participants panel at the bottom of the page -->
+    <div class="card" *ngIf="haveRole('coordinator') && tokens !== null">
+      <div class="card-content">
+        <div class="content">
+          <h3>Participants</h3>
+          <table class="table" *ngIf="tokens.length > 0">
+            <thead>
+            <tr>
+              <th>Username</th>
+              <th>Token</th>
+              <th>Role(s)</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let token of tokens">
+              <td>
+                <span>{{token.username}}</span>
+              </td>
+              <td>
+                <span class="token">{{token.id}}</span>
+              </td>
+
+
+              <td>
+                <div class="tags">
+                  <span *ngFor="let role of token.roles" class="tag" [ngClass]="{'is-warning': role === 'coordinator', 'is-info': role === 'participant'}">{{role}}</span>
+                </div>
+              </td>
+
+              <td>
+                <button class="button is-small is-danger" (click)="deleteToken(token)">
+                  <i class="fa fa-trash-o"></i>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <p>
+            <i class="table" *ngIf="tokens.length == 0">
+              You have not created any token yet.
+            </i>
+          </p>
+          <div class="field">
+            <div class="control">
+              <button class="button is-success" (click)="createToken()" [disabled]="project.status !== 'Created'">
+                <i class="fa fa-plus icon"></i>
+                <span>New Token</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>

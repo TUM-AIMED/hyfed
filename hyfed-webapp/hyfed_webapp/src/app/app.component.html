@@ -1,0 +1,73 @@
+<div class="container is-fluid">
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a routerLink="/" class="navbar-item">
+        <img src="assets/logos/hyfed_logo.png" class="menu-icon" alt="logo"/>
+        <strong class="is-primary">Home</strong>
+      </a>
+
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div class="navbar-menu is-active">
+      <div class="navbar-start">
+        <a routerLink="/projects" routerLinkActive="is-active" class="navbar-item" *ngIf="user">
+          <span class="icon"><i class="fa fa-flask"></i></span>
+          <span>Projects</span>
+        </a>
+
+        <a routerLink="/how-to" routerLinkActive="is-active" class="navbar-item">
+          <span class="icon"><i class="fa fa-info"></i></span>
+          <span>How to</span>
+        </a>
+
+        <a routerLink="/about" routerLinkActive="is-active" class="navbar-item">
+          <span class="icon"><i class="fa fa-question"></i></span>
+          <span>About</span>
+        </a>
+      </div>
+
+      <div class="navbar-end" *ngIf="!user">
+        <a routerLink="/account" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="is-active" class="navbar-item">
+          <span class="icon"><i class="fa fa-user-plus"></i></span>
+          <span>Sign up</span>
+        </a>
+
+        <a routerLink="/account" [queryParams]="{p:'login'}" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="is-active" class="navbar-item">
+          <span class="icon"><i class="fa fa-sign-in"></i></span>
+          <span>Log in</span>
+        </a>
+      </div>
+
+      <div class="navbar-end" *ngIf="user">
+        <a routerLink="/account" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="is-active" class="navbar-item">
+          <span class="icon"><i class="fa fa-user-circle"></i></span>
+          <span>{{user.username}}</span>
+        </a>
+
+        <a routerLink="/account" [queryParams]="{p:'logout'}" routerLinkActive="is-active" class="navbar-item">
+          <span class="icon"><i class="fa fa-sign-out"></i></span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<footer>
+  <div class="is-size-7">&#169; Copyright 2021 by the HyFed Developers. All Rights Reserved.</div>
+  <div class="is-size-7">
+    Powered by HyFed <!-- DO NOT REMOVE THIS LINE TO ACKNOWLEDGE HyFed -->
+  </div>
+  <div class="is-size-7">
+    <a routerLink="/about">About</a>
+<!--    <a routerLink="/privacy-policy">Privacy policy</a>-->
+  </div>
+</footer>

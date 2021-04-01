@@ -1,0 +1,162 @@
+<section class="hero is-primary is-small">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <section class="section">
+        <h1 class="title">
+          <i class="fa fa-flask"></i> Projects
+        </h1>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- Create project panel -->
+<div class="container is-fluid">
+  <section class="section">
+    <div class="card">
+      <div class="card-content">
+        <div class="content">
+          <h3>Project</h3>
+
+          <p class="help">
+            The creator of the project will be the <b>coordinator</b>.
+          </p>
+
+          <!-- BEGIN TOOL SELECTION MENU -->
+          <div class="field">
+            <label class="label" for="npTool">Tool</label>
+            <div class="select">
+              <select class="input" [(ngModel)]="newProject.tool" id="npTool">
+                <option value="Select">Select</option>
+                <option value="HyFed">HyFed</option>
+              </select>
+            </div>
+          </div>
+          <!-- END TOOL SELECTION MENU -->
+
+          <!-- BEGIN ALGORITHM SELECTION MENU -->
+          <div class="field" *ngIf="newProject.tool === 'HyFed'">
+              <label class="label" for="npHyFedAlgorithm">Algorithm</label>
+              <div class="select">
+                <select class="input" [(ngModel)]="newProject.algorithm" id="npHyFedAlgorithm">
+                  <option value="Select">Select</option>
+                  <option value="HyFed-Algorithm">HyFed-Algorithm</option>
+                </select>
+              </div>
+          </div>
+          <!-- END ALGORITHM SELECTION MENU -->
+
+          <!-- BEGIN Name AND Description FIELDS -->
+          <div class="field" *ngIf="newProject.tool === 'HyFed' && newProject.algorithm !== 'Select'">
+              <label class="label" for="npName">Name</label>
+              <div class="control" style="width:30%">
+                <input class="input" [(ngModel)]="newProject.name" id="npName" placeholder="Name of the project" />
+              </div>
+          </div>
+
+          <div class="field" *ngIf="newProject.tool === 'HyFed' && newProject.algorithm !== 'Select'">
+              <label class="label" for="npDescription">Description</label>
+              <div class="control" style="width:70%">
+                <input class="input" [(ngModel)]="newProject.description" id="npDescription" placeholder="Description of the project" />
+              </div>
+          </div>
+          <!-- END Name AND Description FIELDS -->
+
+          <!-- BEGIN DISABLE/ENABLE Create BUTTON -->
+          <div class="field">
+            <div class="control">
+              <div class="buttons">
+                <button class="button is-success" [disabled]="newProject.tool === 'Select' || newProject.algorithm === 'Select' ||
+                                                              !newProject.name || !newProject.description"
+                        (click)="createProject()">
+                  <i class="fa fa-plus icon"></i>
+                  <span>Create</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- END DISABLE/ENABLE Create BUTTON -->
+
+        </div>
+      </div>
+    </div>
+
+    <!-- List of projects -->
+    <div class="card">
+      <div class="card-content">
+        <div class="content">
+          <h3>Projects</h3>
+          <table class="table" *ngIf="projects.length > 0">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tool</th>
+              <th>Algorithm</th>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Step</th>
+              <th>Round</th>
+              <th>Role(s)</th>
+              <th>Created at</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let proj of projects">
+              <td>
+                <a routerLink="/project/{{proj.id}}">
+                   {{proj.id | slice:0:5}}
+                </a>
+              </td>
+              <td>
+                   {{proj.tool}}
+              </td>
+              <td>
+                  {{proj.algorithm}}
+              </td>
+              <td>
+                  {{proj.name}}
+              </td>
+              <td>
+                <div class="tags">
+                  <span class="tag is-warning"  *ngIf="proj.status === 'Created'" >{{proj.status}}</span>
+                  <span class="tag is-primary"  *ngIf="proj.status === 'Parameters Ready'" >{{proj.status}}</span>
+                  <span class="tag is-link"     *ngIf="proj.status === 'Aggregating'" >{{proj.status}}</span>
+                  <span class="tag is-success"  *ngIf="proj.status === 'Done'" >{{proj.status}}</span>
+                  <span class="tag is-danger"   *ngIf="proj.status === 'Failed' || proj.status === 'Aborted'" >{{proj.status}}</span>
+                </div>
+              </td>
+
+              <td>{{proj.step}}</td>
+
+              <td>{{proj.commRound}}</td>
+              <td>
+                <div class="tags">
+                  <span *ngFor="let role of proj.roles" class="tag" [ngClass]="{'is-warning': role === 'coordinator', 'is-info': role === 'participant'}">{{role}}</span>
+                </div>
+              </td>
+              <td>
+                {{proj.createdAt | date: "short"}}
+              </td>
+              <td>
+                <div class="buttons">
+                  <button class="button is-small is-danger"
+                          (click)="deleteProject(proj)"
+                          [disabled]="!haveRole(proj, 'coordinator')">
+                    <i class="fa fa-trash-o"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <p>
+            <i class="table" *ngIf="projects.length == 0">
+              No project has been created yet!
+            </i>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
