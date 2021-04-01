@@ -29,7 +29,7 @@ If you use the **HyFed** framework in your study, please cite it as follows: <br
     title={HyFed: A Hybrid, Federated Framework for Privacy-preserving Machine Learning},
     author={Nasirigerdeh, Reza and Torkzadehmahani, Reihaneh and Matschinske, Julian and Baumbach, Jan and Kaissis, Georgios  and Daniel Rückert},
     year={2021},
-    howpublished={https://github.com/TUM-AIMED/hyfed},
+    howpublished={https://github.com/tum-aimed/hyfed},
     }
    ```
 ## Contact
