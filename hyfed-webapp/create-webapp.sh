@@ -30,6 +30,7 @@ sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/e2e/src/app.e2e-spec.
 sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/index.html"
 sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/app/pages/index-page/index-page.component.html"
 sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/app/pages/projects-page/projects-page.component.html"
+sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/app/pages/project-page/project-page.component.html"
 sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/app/pages/about-page/about-page.component.html"
 sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/app/pages/how-to-page/how-to-page.component.html"
 sed -i "s/MyTool/${ProjectName}/g" "${project_name}_webapp/src/app/pages/account-page/account-page.component.html"
