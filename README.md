@@ -1,9 +1,10 @@
 # HyFed Framework
 
-## _Hybrid, Federated Framework for Privacy-preserving Machine Learning_
+## __Hybrid, Federated Framework for Privacy-preserving Machine Learning__
 
 <p float="left">
-<img src="hyfed-docs/readme/img/main/hyfed_logo.png" width="200" height="115">
+<img src="hyfed-docs/readme/img/main/hyfed_logo.png" width="180" height="60">
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="hyfed-docs/readme/img/main/tum_logo.png" width="100" height="50">
 </p>
 
@@ -19,7 +20,7 @@ To learn how to **develop** your own federated tool using the **HyFed** API, ple
 To **run** the **HyFed** framework, please see [HyFed-Run](hyfed-docs/readme/run_hyfed.md). 
 
 ## License
-The HyFed source code is licensed under the Apache License Version 2.0. (C) 2021, the HyFed developers.
+The **HyFed** source code is licensed under the Apache License Version 2.0. (C) 2021, the **HyFed** developers.
 
 ## Citation
 If you use the **HyFed** framework in your study, please cite it as follows: <br />
@@ -28,11 +29,11 @@ If you use the **HyFed** framework in your study, please cite it as follows: <br
     title={HyFed: A Hybrid, Federated Framework for Privacy-preserving Machine Learning},
     author={Nasirigerdeh, Reza and Torkzadehmahani, Reihaneh and Matschinske, Julian and Baumbach, Jan and Kaissis, Georgios  and Daniel Rückert},
     year={2021},
-    howpublished={https://github.com/TUM-AIMED/hyfed},
+    howpublished={https://github.com/tum-aimed/hyfed},
     }
    ```
 ## Contact
-In case of questions or problems regarding HyFed, please contact the HyFed developers: Reza Nasirigerdeh, Reihaneh Torkzadehmahani, and Julian Matschinske.
+In case of questions or problems regarding **HyFed**, please contact the **HyFed** developers: Reza Nasirigerdeh, Reihaneh Torkzadehmahani, and Julian Matschinske.
 
 ## Disclaimer
 
