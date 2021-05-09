@@ -174,6 +174,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5368709120
+
 # logging configuration
 LOG_LEVEL = 'INFO'
 logging.config.dictConfig({
