@@ -75,9 +75,9 @@ initializes the name, description, and features of the project, and creates two 
 Notice that the feature list, 'Age', 'DBP' (diastolic blood pressure), and 'SBP' (systolic blood pressure) are
  a subset of the column names in the participants' dataset files. They are set as a single string, where the features are separated by a comma (Age,DBP,SBP)
 
-<img src="img/run/stats_project_create.png" width="350" height="450">
+<img src="img/run/stats_project_create.png" width="450" height="550">
 
-<img src="img/run/stats_project_summary.png" width="850" height="400">
+<img src="img/run/stats_project_summary.png" width="1050" height="500">
 
 ### Join project
 The participants employ the client GUI to join the project, select the dataset, and see the status/progress of the project. Run two copies of the 
@@ -90,9 +90,9 @@ client GUI (one for each participant) as follows:
 For each participant, enter the username and password of the participant, ID of the project, and one of the tokens created by the coordinator. 
 Notice that the project ID is the same but tokens are different for the participants.
 
-<img src="img/run/stats_project_join.png" width="500" height="250">
+<img src="img/run/stats_project_join.png" width="500" height="300">
 
-<img src="img/run/stats_webapp_join.png" width="800" height="200">
+<img src="img/run/stats_webapp_join.png" width="900" height="300">
 
 
 ### Project info
