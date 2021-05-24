@@ -56,6 +56,23 @@ class HyFedProjectSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
     coordinator = serializers.SerializerMethodField()
 
+    # runtime stats
+    client_computation = serializers.SerializerMethodField()
+    client_network_send = serializers.SerializerMethodField()
+    client_network_receive = serializers.SerializerMethodField()
+    client_idle = serializers.SerializerMethodField()
+    compensator_computation = serializers.SerializerMethodField()
+    compensator_network_send = serializers.SerializerMethodField()
+    server_computation = serializers.SerializerMethodField()
+    runtime_total = serializers.SerializerMethodField()
+
+    # traffic stats between components
+    client_server = serializers.SerializerMethodField()
+    server_client = serializers.SerializerMethodField()
+    client_compensator = serializers.SerializerMethodField()
+    compensator_server = serializers.SerializerMethodField()
+    traffic_total = serializers.SerializerMethodField()
+
     def get_id(self, instance):
         """ Convert id from UUID type to string """
         return str(instance.id)
@@ -81,10 +98,53 @@ class HyFedProjectSerializer(serializers.ModelSerializer):
         except:
             return ['-']
 
+    # functions to get the client/compensator/server times
+    def get_client_computation(self, instance):
+        return instance.timer.client_computation
+
+    def get_client_network_send(self, instance):
+        return instance.timer.client_network_send
+
+    def get_client_network_receive(self, instance):
+        return instance.timer.client_network_receive
+
+    def get_client_idle(self, instance):
+        return instance.timer.client_idle
+
+    def get_compensator_computation(self, instance):
+        return instance.timer.compensator_computation
+
+    def get_compensator_network_send(self, instance):
+        return instance.timer.compensator_network_send
+
+    def get_server_computation(self, instance):
+        return instance.timer.server_computation
+
+    def get_runtime_total(self, instance):
+        return instance.timer.runtime_total
+
+    def get_client_server(self, instance):
+        return instance.traffic.client_server
+
+    def get_server_client(self, instance):
+        return instance.traffic.server_client
+
+    def get_client_compensator(self, instance):
+        return instance.traffic.client_compensator
+
+    def get_compensator_server(self, instance):
+        return instance.traffic.compensator_server
+
+    def get_traffic_total(self, instance):
+        return instance.traffic.traffic_total
+
     class Meta:
         model = HyFedProjectModel
         fields = ('id', 'coordinator', 'tool', 'algorithm', 'name', 'description', 'status', 'step', 'comm_round',
-                  'roles', 'created_at',)
+                  'roles', 'created_at', 'client_computation', 'client_network_send', 'client_network_receive', 'client_idle',
+                  'compensator_computation', 'compensator_network_send', 'server_computation', 'runtime_total',
+                  'client_server', 'server_client', 'client_compensator', 'compensator_server', 'traffic_total')
+
         read_only_fields = ('id', 'created_at',)
 
 

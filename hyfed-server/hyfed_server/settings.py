@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'hyfed_server',  # HyFed server app
 
     'my_tool_server',  # MyTool server app
-    'tick_tock_server',  # TickTock server app
 
     'stats_server',  # Stats server app
 ]
@@ -174,10 +173,11 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5368709120
 
 # logging configuration
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
 logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': False,

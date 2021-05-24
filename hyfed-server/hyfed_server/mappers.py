@@ -21,11 +21,6 @@ from hyfed_server.project.hyfed_server_project import HyFedServerProject
 from hyfed_server.model.hyfed_models import HyFedProjectModel
 from hyfed_server.serializer.hyfed_serializers import HyFedProjectSerializer
 
-# TickTock project
-from tick_tock_server.project.tick_tock_server_project import TickTockServerProject
-from tick_tock_server.model.tick_tock_model import TickTockProjectModel
-from tick_tock_server.serializer.tick_tock_serializers import TickTockProjectSerializer
-
 # MyTool project
 from my_tool_server.project.my_tool_server_project import MyToolServerProject
 from my_tool_server.model.my_tool_model import MyToolProjectModel
@@ -52,12 +47,6 @@ hyfed_tool = 'HyFed'
 server_project[hyfed_tool] = HyFedServerProject
 project_model[hyfed_tool] = HyFedProjectModel
 project_serializer[hyfed_tool] = HyFedProjectSerializer
-
-# TickTock project mapper values
-tick_tock_tool = 'TickTock'
-server_project[tick_tock_tool] = TickTockServerProject
-project_model[tick_tock_tool] = TickTockProjectModel
-project_serializer[tick_tock_tool] = TickTockProjectSerializer
 
 # MyTool project mapper values
 my_tool_name = 'MyTool'

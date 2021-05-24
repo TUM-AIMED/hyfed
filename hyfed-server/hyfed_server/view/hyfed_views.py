@@ -1,5 +1,5 @@
 """
-    The API for client <-> server and webapp <-> server communication
+    The API for client <-> server, webapp <-> server, and compensator <-> server communication
 
     Copyright 2021 Reza NasiriGerdeh, Julian Matschinske, and Reihaneh TorkzadehMahani. All Rights Reserved.
 
@@ -31,7 +31,7 @@ from rest_framework.decorators import action
 
 from hyfed_server.model.hyfed_models import HyFedProjectModel, TokenModel
 from hyfed_server.util.hyfed_parameters import Parameter, AuthenticationParameter, CoordinationParameter, \
-   ServerParameter, HyFedProjectParameter
+     SyncParameter, HyFedProjectParameter
 from hyfed_server.util.pool import ProjectPool
 from hyfed_server.models import UserModel
 from hyfed_server.serializer.hyfed_serializers import UserSerializer, TokenSerializer, HyFedProjectSerializer
@@ -108,6 +108,52 @@ def client_authentication(request_handler_function):
     return wrapper
 
 
+def compensator_authentication(request_handler_function):
+    """
+        Decorator to authenticate the compensator using the hash values
+    """
+
+    def wrapper(self, request, *params, **kwargs):
+        try:
+            # extract project_id, username, and token from the request body
+            request_body = pickle.loads(request.body)
+
+            authentication_parameters = request_body[Parameter.AUTHENTICATION]
+
+            hash_project_id = authentication_parameters[AuthenticationParameter.HASH_PROJECT_ID]
+            hash_username = authentication_parameters[AuthenticationParameter.HASH_USERNAME_HASHES]
+            hash_token = authentication_parameters[AuthenticationParameter.HASH_TOKEN_HASHES]
+
+            # if project is not running, a bad request received from the compensator
+            if not project_pool.is_running_hash_project(hash_project_id):
+                return HttpResponseBadRequest()
+
+            # get the project corresponding to the hash project ID
+            project_id = project_pool.get_project_id(hash_project_id)
+            running_project = project_pool.get_running_project(project_id)
+
+            # check hash of the usernames received from the compensator matches that from the project
+            if hash_username != running_project.get_hash_client_usernames():
+                logger.debug(f'Project {running_project.get_project_id()}:  hash_username {hash_username}'
+                             f' from compensator and {running_project.get_hash_client_usernames()} do not match!')
+                return HttpResponseBadRequest()
+
+            # check hash of the tokens received from the compensator matches that from the project
+            if hash_token != running_project.get_hash_client_tokens():
+                logger.debug(f'Project {running_project.get_project_id()}: hash_token {hash_token} from compensator'
+                             f' and {running_project.get_hash_client_tokens()} do not match!')
+                return HttpResponseBadRequest()
+
+            logger.debug(f'Project {project_id}: compensator authenticated!')
+        except Exception as auth_exception:
+            logger.debug(auth_exception)
+            return HttpResponseBadRequest()
+
+        return request_handler_function(self, request, *params, **kwargs)
+
+    return wrapper
+
+
 # ############### View classes to serve CLIENT requests ####################
 class ProjectJoinView(APIView):
     """ Handles the join process of the clients """
@@ -160,9 +206,9 @@ class ProjectJoinView(APIView):
 
             # for logging purposes
             if join_ok:
-                logger.info(f'Project {project_id}: client {username} join was successful!')
+                logger.debug(f'Project {project_id}: client {username} join was successful!')
             else:
-                logger.info(f'Project {project_id}: client {username} join was NOT successful!')
+                logger.debug(f'Project {project_id}: client {username} join was NOT successful!')
 
             # if this client is the last one who joined, start the project
             if project_pool.should_start(project_id):
@@ -217,7 +263,7 @@ class ProjectInfoView(APIView):
             json_response = {Parameter.PROJECT: serialized_project}
             serialized_response = pickle.dumps(json_response)
 
-            logger.info(f"Project {project_id}: {tool} project info serialized to client {username} ...")
+            logger.debug(f"Project {project_id}: {tool} project info serialized to client {username} ...")
 
             return HttpResponse(content=serialized_response)
 
@@ -271,7 +317,7 @@ class ModelAggregationView(APIView):
             # get the running project from the pool
             running_project = project_pool.get_running_project(project_id)
 
-            logger.info(f'Project {project_id}: local parameters received from client {username}!')
+            logger.debug(f'Project {project_id}: local parameters received from client {username}!')
 
             # update client->server traffic counter
             request_size = int(request.headers['Content-Length'])
@@ -303,11 +349,13 @@ class GlobalModelView(APIView):
     @client_authentication
     def get(self, request):
         try:
-            # extract project_id and username from the request body
+            # extract project_id, username, and comm_round from the request body
             request_body = pickle.loads(request.body)
             authentication_parameters = request_body[Parameter.AUTHENTICATION]
+            sync_parameters = request_body[Parameter.SYNCHRONIZATION]
             project_id = authentication_parameters[AuthenticationParameter.PROJECT_ID]
             username = authentication_parameters[AuthenticationParameter.USERNAME]
+            comm_round = sync_parameters[SyncParameter.COMM_ROUND]
 
             # get the running project from the pool
             running_project = project_pool.get_running_project(project_id)
@@ -317,33 +365,15 @@ class GlobalModelView(APIView):
             running_project.add_to_client_server_traffic(request_size)
 
             # prepare parameters sent to the clients (e.g. coordination and global parameters if ready)
-            logger.debug(f'Project {project_id}: creating server parameters ...')
-            server_parameters = ServerParameter()
-            server_parameters.set_coordination_parameters(project_id=running_project.get_project_id(),
-                                                          project_status=running_project.get_status(),
-                                                          project_step=running_project.get_step(),
-                                                          comm_round=running_project.get_comm_round())
-
-            server_parameters.set_global_parameters(global_parameters=running_project.get_global_parameters())
-
-            logger.debug(f'Project {project_id}: jsonifying the server parameters ...')
-            if running_project.is_global_parameters_client_agnostic():
-                server_parameters = server_parameters.jsonify_parameters()
-            else:
-                server_parameters = server_parameters.jsonify_parameters(client_username=username)
-
-            # just for logging purposes
-            project_status = server_parameters[Parameter.COORDINATION][CoordinationParameter.PROJECT_STATUS]
-            if project_status == ProjectStatus.PARAMETERS_READY:
-                logger.info(f"Project {project_id}: global parameters shared with client {username}!")
-
-            serialized_server_parameters = pickle.dumps(server_parameters)
+            logger.debug(f'Project {project_id}: preparing client parameters ...')
+            client_parameters_serialized = running_project.prepare_client_parameters(client_username=username,
+                                                                                     client_comm_round=comm_round)
 
             # update server->client traffic counter
-            response_size = len(serialized_server_parameters)
+            response_size = len(client_parameters_serialized)
             running_project.add_to_server_client_traffic(response_size)
 
-            return HttpResponse(content=serialized_server_parameters)
+            return HttpResponse(content=client_parameters_serialized)
         except Exception as global_model_exception:
             logger.debug(f'Project {project_id}: {global_model_exception}')
             return HttpResponseBadRequest()
@@ -376,12 +406,88 @@ class ResultDownloadView(APIView):
             # create http response
             http_response = HttpResponse(FileWrapper(open(zip_file_name, 'rb')), content_type='application/zip')
 
-            logger.info(f"Project {project_id}: result zip file shared with client {username}!")
+            logger.debug(f"Project {project_id}: result zip file shared with client {username}!")
 
             return http_response
         except Exception as io_exception:
             logger.debug(f'Project {project_id}: {io_exception}')
             return HttpResponseBadRequest()
+
+
+# ############### View classes to serve COMPENSATOR requests ####################
+class ProjectAuthenticationView(APIView):
+    """ Tell the compensator whether a project with the asked hash_id is running """
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        try:
+            # extract the hash of the project ID from the request body
+            request_body = pickle.loads(request.body)
+            authentication_parameters = request_body[Parameter.AUTHENTICATION]
+            hash_project_id = authentication_parameters[AuthenticationParameter.HASH_PROJECT_ID]
+
+            # if project specified by the hash_project_id is running,
+            # provide the compensator with the number of clients in the project
+            if project_pool.is_running_hash_project(hash_project_id):
+                auth_ok = True
+                project_id = project_pool.get_project_id(hash_project_id)
+                client_count = len(project_pool.get_running_project(project_id).get_client_tokens())
+            else:
+                auth_ok = False
+                client_count = -1
+
+        except Exception as project_auth_exception:
+            logger.error(project_auth_exception)
+            auth_ok = False
+            client_count = -1
+
+        response = {AuthenticationParameter.PROJECT_AUTHENTICATED: auth_ok,
+                    HyFedProjectParameter.CLIENT_COUNT: client_count}
+
+        serialized_response = pickle.dumps(response)
+
+        return HttpResponse(content=serialized_response)
+
+
+class ModelCompensationView(APIView):
+    """ Get the compensation parameters from the compensator """
+
+    permission_classes = (AllowAny,)
+
+    @compensator_authentication
+    def post(self, request):
+        try:
+
+            # extract the hash of the project ID from the request body
+            request_body = pickle.loads(request.body)
+            authentication_parameters = request_body[Parameter.AUTHENTICATION]
+            hash_project_id = authentication_parameters[AuthenticationParameter.HASH_PROJECT_ID]
+
+            # get the running project associated with the hash project ID
+            project_id = project_pool.get_project_id(hash_project_id)
+            running_project = project_pool.get_running_project(project_id)
+
+            logger.debug(f"Project {project_id}: compensator parameters received!")
+
+            # if compensator parameters already received, ignore the request
+            if running_project.is_compensator_parameters_received():
+                logger.debug(f'Project {project_id}: compensator parameters ignored because they have been already received!')
+                return HttpResponseBadRequest()
+
+            # add traffic size to compensator -> server traffic counter
+            request_size = int(request.headers['Content-Length'])
+            running_project.add_to_compensator_server_traffic(request_size)
+
+            # init compensator parameters of the corresponding project
+            running_project.set_compensator_parameters(request_body)
+            logger.debug(f'Project {project_id}: compensator parameters initialized.')
+
+        except Exception as model_compensation_exception:
+            logger.debug(f'Project {project_id}: {model_compensation_exception}')
+            return HttpResponseBadRequest()
+
+        return HttpResponse()
 
 
 # ############### View classes to serve WEBAPP requests ####################

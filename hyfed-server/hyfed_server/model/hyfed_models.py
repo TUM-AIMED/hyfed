@@ -79,16 +79,23 @@ class TimerModel(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    computation = models.FloatField(default=0.0)
-    network_send = models.FloatField(default=0.0)
-    network_receive = models.FloatField(default=0.0)
-    idle = models.FloatField(default=0.0)
-    aggregation = models.FloatField(default=0.0)
+    client_computation = models.FloatField(default=0.0)
+    client_network_send = models.FloatField(default=0.0)
+    client_network_receive = models.FloatField(default=0.0)
+    client_idle = models.FloatField(default=0.0)
+    compensator_computation = models.FloatField(default=0.0)
+    compensator_network_send = models.FloatField(default=0.0)
+    server_computation = models.FloatField(default=0.0)
+    runtime_total = models.FloatField(default=0.0)
 
 
 class TrafficModel(models.Model):
-    """ Network traffic statistics client <-> server  """
+    """ Network traffic statistics client <-> server and client -> compensator  """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client_server = models.CharField(max_length=32, default='0.00 KB')
     server_client = models.CharField(max_length=32, default='0.00 KB')
+    client_compensator = models.CharField(max_length=32, default='0.00 KB')
+    compensator_server = models.CharField(max_length=32, default='0.00 KB')
+    traffic_total = models.CharField(max_length=32, default='0.00 KB')
+

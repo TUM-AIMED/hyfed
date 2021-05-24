@@ -79,8 +79,7 @@ class MyToolServerProject(HyFedServerProject):
             super().post_aggregate()
             return
 
-        logger.info(f'Project {self.project_id}: ############## aggregate ####### ')
-        logger.info(f'Project {self.project_id}: #### step {self.step}')
+        logger.debug(f'Project {self.project_id}: ## aggregate')
 
         if self.step == HyFedProjectStep.INIT:  # The first step name MUST always be HyFedProjectStep.INIT
             self.init_step()

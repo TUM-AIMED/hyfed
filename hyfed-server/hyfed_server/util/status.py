@@ -1,5 +1,5 @@
 """
-    Project status in the server and operation status in the clients
+    Project status in the server and operation status in the clients/compensator
 
     Copyright 2021 Reza NasiriGerdeh and Reihaneh TorkzadehMahani. All Rights Reserved.
 
@@ -20,6 +20,7 @@
 class ProjectStatus:
     CREATED = "Created"
     PARAMETERS_READY = "Parameters Ready"
+    WAITING_FOR_COMPENSATOR = "Waiting for Compensator"
     AGGREGATING = "Aggregating"
     DONE = "Done"
     ABORTED = "Aborted"

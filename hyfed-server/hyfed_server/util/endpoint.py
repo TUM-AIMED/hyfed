@@ -1,5 +1,5 @@
 """
-    URL endpoints used by the clients to communicate with the server
+    URL endpoints used by the clients or compensator to communicate with the server
 
     Copyright 2021 Reza NasiriGerdeh and Reihaneh TorkzadehMahani. All Rights Reserved.
 
@@ -19,9 +19,14 @@
 
 
 class EndPoint:
-    PROJECT_JOIN = 'client/hyfed/project-join/'
-    PROJECT_INFO = 'client/hyfed/project-info/'
-    PROJECT_STARTED = 'client/hyfed/project-started/'
-    MODEL_AGGREGATION = 'client/hyfed/model-aggregation/'
-    GLOBAL_MODEL = 'client/hyfed/global-model/'
-    RESULT_DOWNLOAD = 'client/hyfed/result-download/'
+    # to handle clients' requests
+    PROJECT_JOIN = 'client/project-join/'
+    PROJECT_INFO = 'client/project-info/'
+    PROJECT_STARTED = 'client/project-started/'
+    MODEL_AGGREGATION = 'client/model-aggregation/'
+    GLOBAL_MODEL = 'client/global-model/'
+    RESULT_DOWNLOAD = 'client/result-download/'
+
+    # to handle compensator's requests
+    PROJECT_AUTHENTICATION = 'compensator/project-authentication/'
+    MODEL_COMPENSATION = 'compensator/model-compensation/'
