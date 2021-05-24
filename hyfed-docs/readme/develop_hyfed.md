@@ -874,7 +874,10 @@ classes are defined in the same file(s) that **StatsProjectParameter** has been 
     ``` 
 3. Implement the init step function for **Stats** on the client (**stats_client/project/stats_client_project.py**) and server (**stats_server/project/stats_server_project.py**).
 On the client side, the function opens the dataset file, initialize the **x_matrix** and **y_vector** attributes, and sends the local sample count to the server.
-On the server side, the function aggregates the local sample counts to compute the global sample count and sets the next project step depending on the algorithm name. 
+On the server side, the function aggregates the local sample counts to compute the global sample count and sets the next project step depending on the algorithm name. Notice the use 
+   of the set_compensator_flag function, which directs the HyFed client API to make the local parameter(s) (i.e. sample_count) noisy, and to send the noise and noisy parameters to 
+   the compensator and server, respectively. Without using the set_compensator_flag function, the original values of the local parameters are shared with the server, which is not
+   a good privacy practice.
     ```
     # stats_client/project/stats_client_project.py
    
@@ -896,7 +899,8 @@ On the server side, the function aggregates the local sample counts to compute t
             # get the number of samples
             sample_count = self.x_matrix.shape[0]
 
-            # send the sample count to the server
+            # share the noisy sample count with the server and noise with the compensator
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.SAMPLE_COUNT] = sample_count
 
         except Exception as io_exception:
@@ -952,8 +956,9 @@ On the server side, the function aggregates the local sample counts to compute t
 
         try:
             sample_sum = np.sum(self.x_matrix, axis=0)
-    
-            # send sample sum to the server
+
+            # hide the original value of the sample sum from the server
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.SUM] = sample_sum
     
         except Exception as sum_exception:
@@ -1006,7 +1011,8 @@ the variance algorithm, the server side function first prepares the results, and
             # compute sse
             sse = np.sum(np.square(self.x_matrix - global_mean), axis=0)
 
-            # share sse with the server
+            # hide the sse value from the server
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.SSE] = sse
 
         except Exception as sse_exception:
@@ -1069,7 +1075,8 @@ the variance algorithm, the server side function first prepares the results, and
             # computed weighted local beta
             weighted_local_beta = local_sample_count * local_beta
 
-            # share the weighted local betas with the server
+            # hide the weighted local beta values from the server
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.BETA] = weighted_local_beta
 
         except Exception as beta_exception:
