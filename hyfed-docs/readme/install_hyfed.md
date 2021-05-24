@@ -1,10 +1,11 @@
 # HyFed - Install
-The **HyFed** framework consists of three components: (1) **WebApp**, written in **Angular** (version 10.0) and **HTML/CSS**; (2) **server**, written in **Python** (version 3.6) and based on
-the **Django** framework (version 3.1); (3) **client**, written in **Python** (3.6) and based on the **tkinter** package. In the following, we show how to set up 
+The **HyFed** framework consists of four components: (1) **WebApp**, written in **Angular** (version 10.0) and **HTML/CSS**; 
+(2) **client**, written in **Python** (3.6) and based on the **tkinter** package; (3) **compensator** and (4) **server**, both written in **Python** (version 3.6) and based on
+the **Django** framework (version 3.2); . In the following, we show how to set up 
 the development environment for the different components of the **HyFed** framework in Ubuntu 18.04/20.04 LTS.
 
 ### All components
-Install the **git** and **curl** commands:
+Install the **git** and **curl** tools:
    ```
    sudo apt update -y
    sudo apt install curl git -y
@@ -12,7 +13,7 @@ Install the **git** and **curl** commands:
 
 Clone the HyFed GitHub repository into the local machine:
    ```
-   git clone https://github.com/TUM-AIMED/hyfed
+   git clone https://github.com/tum-aimed/hyfed
    ```
 
 ### WebApp component
@@ -23,7 +24,7 @@ Install **Node.js** and **Angular**:
     sudo npm install -g @angular/cli@10
    ```
 
-### Client and server components
+### Client, compensator, and server components
 Install **pip3**, **tkinter**, and **virtualenv**: 
    ```
    sudo apt install python3-pip python3-tk -y
@@ -31,16 +32,24 @@ Install **pip3**, **tkinter**, and **virtualenv**:
    ```
    sudo pip3 install virtualenv
    ```
-Create the client and server virtual environments:
+Create the client, compensator, and server virtual environments:
    ```
    virtualenv -p python3 hyfed-client-venv
+   virtualenv -p python3 hyfed-compensator-venv
    virtualenv -p python3 hyfed-server-venv
    ```
 
-Install the Python packages and their dependencies for the client and server components in the corresponding virtual environments:
+Install the Python packages and their dependencies for the client, compensator, and server components in the corresponding virtual environments:
    ```
    source hyfed-client-venv/bin/activate
    cd hyfed/hyfed-client
+   pip3 install -r requirements.txt
+   deactivate
+   ```
+
+   ```
+   source hyfed-compensator-venv/bin/activate
+   cd hyfed/hyfed-compensator
    pip3 install -r requirements.txt
    deactivate
    ```
