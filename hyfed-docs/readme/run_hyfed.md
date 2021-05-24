@@ -1,6 +1,7 @@
 # HyFed - Run
-To see how the different components of the **HyFed** framework work, we create and run a project from the **Stats** tool. Our assumption is that
-we already installed the **HyFed** requirements described in [HyFed-Install](install_hyfed.md).
+To see how the different components of **HyFed** work, we create and run a project from the **Stats** tool. Our assumption is that
+we already installed the **HyFed** requirements described in [HyFed-Install](install_hyfed.md). Notice that the compensator component is 
+algorithm-agnostic, and therefore, we do not have a specific compensator for **Stats**.
 
 ### Stats WebApp component
 Go to the home directory of the **Stats** WebApp:
@@ -32,14 +33,30 @@ Go to the home directory of the server component:
 Setup the Django models:
   ```
   python manage.py makemigrations
-  python manage.py makemigrations hyfed_server tick_tock_server my_tool_server stats_server
+  python manage.py makemigrations hyfed_server my_tool_server stats_server
     
   python manage.py migrate
   ```
 
 Run the Django server:
   ```
-  python manage.py runserver
+  python manage.py runserver 0.0.0.0:8000
+  ```
+
+### HyFed compensator component
+Activate the virtual environment of the compensator component:
+  ```
+  source hyfed-compensator-venv/bin/activate
+  ```
+
+Go to the home directory of the compensator component:
+  ```
+  cd hyfed/hyfed-compensator
+  ```
+
+Run the compensator:
+  ```
+  python manage.py runserver 0.0.0.0:8001
   ```
 
 ### Signup accounts
