@@ -124,6 +124,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "my_tool_webapp"
+    }
+  },
+  "defaultProject": "my_tool_webapp",
+  "cli": {
+    "analytics": "141d7e65-474f-4e69-848d-bc1523ad6c25"
+  }
 }

@@ -16,52 +16,148 @@
 <div class="container is-fluid" *ngIf="project">
   <section class="section">
 
-    <!-- Project summary panel at the top of the page -->
+    <!-- Project summary panel  -->
     <div class="card" *ngIf="tokens !== null">
       <div class="card-content">
         <div class="content">
           <h3>Project Summary</h3>
           <p>
-            ID: {{project.id}}
-          </p>
-          <p>
-            Tool: {{project.tool}}
+            <b>ID:</b> {{project.id}}
+            <button (click)="copyId(project.id)" value="click to copy" ><i class="far fa-copy"></i></button>
           </p>
 
           <p>
-            Algorithm: {{project.algorithm}}
+            <b>Tool:</b> {{project.tool}}
           </p>
 
           <p>
-            Name: {{project.name}}
+            <b>Algorithm:</b> {{project.algorithm}}
           </p>
 
           <p>
-            Description: {{project.description}}
+            <b>Name:</b> {{project.name}}
           </p>
 
           <p>
-            Status: {{project.status}}
+            <b>Description:</b> {{project.description}}
           </p>
 
           <p>
-            Step: {{project.step}}
+            <b>Association test:</b> {{project.algorithm}}
           </p>
 
           <p>
-            Communication round: {{project.commRound}}
+            <b>Status:</b> {{project.status}}
           </p>
 
-          <!-- BEGIN MyTool SPECIFIC (HYPER-)PARAMETER VALUES -->
+          <p>
+            <b>Step:</b> {{project.step}}
+          </p>
 
-          <!-- END MyTool SPECIFIC (HYPER-)PARAMETER VALUES -->
+          <p>
+            <b>Communication round:</b> {{project.commRound}}
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Runtime statistics panel -->
+    <div class="card" *ngIf="project.status !== 'Created'">
+      <div class="card-content">
+        <div class="content">
+          <h3>Runtime statistics (seconds)</h3>
+          <table class="table">
+            <thead>
+            </thead>
+            <tbody>
+            <tr>
+              <th>
+                <span>Client (average)</span>
+              </th>
+              <td>
+                <span>Computation: {{project.clientComputation}}</span>
+              </td>
+              <td>
+                <span>Network send: {{project.clientNetworkSend}}</span>
+              </td>
+              <td>
+                <span>Network receive: {{project.clientNetworkReceive}}</span>
+              </td>
+              <td>
+                <span>Idle: {{project.clientIdle}}</span>
+              </td>
+            </tr>
+
+            <tr>
+              <th>
+                <span>Compensator</span>
+              </th>
+              <td>
+                <span>Computation: {{project.compensatorComputation}}</span>
+              </td>
+              <td>
+                <span>Network send: {{project.compensatorNetworkSend}}</span>
+              </td>
+            </tr>
+
+            <tr>
+              <th>
+                <span>Server</span>
+              </th>
+              <td>
+                <span>Computation: {{project.serverComputation}}</span>
+              </td>
+            </tr>
+
+            <tr>
+              <th>
+                <span>Total</span>
+              </th>
+              <td>
+                <span><b>{{project.runtimeTotal}}</b></span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+     <!-- Network statistics panel -->
+    <div class="card" *ngIf="project.status !== 'Created'">
+      <div class="card-content">
+        <div class="content">
+          <h3>Network statistics</h3>
+          <table class="table">
+            <thead>
+            <tr>
+              <th>Clients -> Server</th>
+              <th>Server -> Clients</th>
+              <th>Clients -> Compensator</th>
+              <th>Compensator -> Server</th>
+              <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>{{project.clientServer}}</td>
+              <td>{{project.serverClient}}</td>
+              <td>{{project.clientCompensator}}</td>
+              <td>{{project.compensatorServer}}</td>
+              <td>{{project.trafficTotal}}</td>
+
+            </tr>
+            </tbody>
+          </table>
 
         </div>
       </div>
     </div>
 
     <!-- Result panel -->
-    <div class="card" *ngIf="project.status !== 'Created'">
+    <div class="card" *ngIf="project.status === 'Done'">
       <div class="card-content">
         <div class="content">
           <div class="control is-pulled-right">
@@ -109,8 +205,11 @@
               </td>
 
               <td>
-                <button class="button is-small is-danger" (click)="deleteToken(token)">
+                <button style="margin-right:5px;" class="button is-small is-danger" (click)="deleteToken(token)">
                   <i class="fa fa-trash-o"></i>
+                </button>
+                <button class="button is-small is-primary" (click)="copyId(token.id)" value="click to copy">
+                  <i class="far fa-copy"></i>
                 </button>
               </td>
             </tr>

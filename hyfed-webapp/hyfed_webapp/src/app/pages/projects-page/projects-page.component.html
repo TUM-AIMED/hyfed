@@ -22,7 +22,7 @@
             The creator of the project will be the <b>coordinator</b>.
           </p>
 
-          <!-- BEGIN TOOL SELECTION MENU -->
+     <!-- BEGIN TOOL SELECTION MENU -->
           <div class="field">
             <label class="label" for="npTool">Tool</label>
             <div class="select">
@@ -77,6 +77,7 @@
           </div>
           <!-- END DISABLE/ENABLE Create BUTTON -->
 
+
         </div>
       </div>
     </div>
@@ -90,9 +91,8 @@
             <thead>
             <tr>
               <th>ID</th>
-              <th>Tool</th>
-              <th>Algorithm</th>
               <th>Name</th>
+              <th>Association test</th>
               <th>Status</th>
               <th>Step</th>
               <th>Round</th>
@@ -109,13 +109,10 @@
                 </a>
               </td>
               <td>
-                   {{proj.tool}}
+                  {{proj.name}}
               </td>
               <td>
                   {{proj.algorithm}}
-              </td>
-              <td>
-                  {{proj.name}}
               </td>
               <td>
                 <div class="tags">

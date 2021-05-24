@@ -1,9 +1,9 @@
 import {BaseModel, IModelJson} from './base.model';
 
 type ToolType = 'Select' | 'MyTool'; // ADD THE TOOL NAME(S) HERE
-type AlgorithmType = 'Select' | 'My-Algorithm'; // ADD THE ALGORITHM NAME(S) HERE
+type AlgorithmType = 'Select' | 'MyTool-Algorithm'; // ADD THE ALGORITHM NAME(S) HERE
 
-type StatusType = 'Created' | 'Parameters Ready' | 'Aggregating' | 'Done' | 'Aborted' | 'Failed';
+type StatusType = 'Created' | 'Parameters Ready' | 'Waiting for Compensator' | 'Aggregating' | 'Done' | 'Aborted' | 'Failed';
 
 export interface ProjectJson extends IModelJson {
 
@@ -19,6 +19,22 @@ export interface ProjectJson extends IModelJson {
   token?: string;
   created_at?: string;
 
+  // runtime stats related attributes (common among tools)
+  client_computation?: number;
+  client_network_send?: number;
+  client_network_receive?: number;
+  client_idle?: number;
+  compensator_computation?: number;
+  compensator_network_send?: number;
+  server_computation?: number;
+  runtime_total?: number;
+
+  // traffic stats
+  client_server?: string;
+  server_client?: string;
+  client_compensator?: string;
+  compensator_server?: string;
+  traffic_total?: string;
 }
 
 export class ProjectModel extends BaseModel<ProjectJson> {
@@ -32,6 +48,21 @@ export class ProjectModel extends BaseModel<ProjectJson> {
   private _commRound: number;
   private _roles: string[];
   private _createdAt: Date;
+
+  private _clientComputation: number;
+  private _clientNetworkSend: number;
+  private _clientNetworkReceive: number;
+  private _clientIdle: number;
+  private _compensatorComputation: number;
+  private _compensatorNetworkSend: number;
+  private _serverComputation: number;
+  private _runtimeTotal: number;
+
+  private _clientServer: string;
+  private _serverClient: string;
+  private _clientCompensator: string;
+  private _compensatorServer: string;
+  private _trafficTotal: string;
 
   constructor() {
     super();
@@ -48,6 +79,21 @@ export class ProjectModel extends BaseModel<ProjectJson> {
     this._commRound = proj.comm_round;
     this._roles = proj.roles;
     this._createdAt = new Date(proj.created_at);
+
+    this._clientComputation = proj.client_computation;
+    this._clientNetworkSend = proj.client_network_send;
+    this._clientNetworkReceive = proj.client_network_receive;
+    this._clientIdle = proj.client_idle;
+    this._compensatorComputation = proj.compensator_computation;
+    this._compensatorNetworkSend = proj.compensator_network_send;
+    this._serverComputation = proj.server_computation;
+    this._runtimeTotal = proj.runtime_total;
+
+    this._clientServer = proj.client_server;
+    this._serverClient = proj.server_client;
+    this._clientCompensator = proj.client_compensator;
+    this._compensatorServer = proj.compensator_server;
+    this._trafficTotal = proj.traffic_total;
 
   }
 
@@ -87,5 +133,56 @@ export class ProjectModel extends BaseModel<ProjectJson> {
     return this._createdAt;
   }
 
+  public get clientComputation(): number {
+    return this._clientComputation;
+  }
+
+  public get clientNetworkSend(): number {
+    return this._clientNetworkSend;
+  }
+
+  public get clientNetworkReceive(): number {
+    return this._clientNetworkReceive;
+  }
+
+  public get clientIdle(): number {
+    return this._clientIdle;
+  }
+
+  public get compensatorComputation(): number {
+    return this._compensatorComputation;
+  }
+
+  public get compensatorNetworkSend(): number {
+    return this._compensatorNetworkSend;
+  }
+
+  public get serverComputation(): number {
+    return this._serverComputation;
+  }
+
+  public get runtimeTotal(): number {
+    return this._runtimeTotal;
+  }
+
+  public get clientServer(): string {
+    return this._clientServer;
+  }
+
+  public get serverClient(): string {
+    return this._serverClient;
+  }
+
+  public get clientCompensator(): string {
+    return this._clientCompensator;
+  }
+
+  public get compensatorServer(): string {
+    return this._compensatorServer;
+  }
+
+  public get trafficTotal(): string {
+    return this._trafficTotal;
+  }
 
 }

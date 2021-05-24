@@ -45,7 +45,7 @@ export class UserService implements RestProvider<UserModel, UserJson> {
         this.api.get<UserJson>(`/user/info/`).then(async (json) => {
           await user.refresh(json);
         });
-      }, 10 * 1000);
+      }, 60000);
     });
   }
 

@@ -52,7 +52,7 @@ export class ProjectPageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.interval = setInterval(async () => {
       this.refresh();
-    }, 5000);
+    }, 300000);
   }
 
   ngOnDestroy() {
@@ -105,4 +105,18 @@ export class ProjectPageComponent implements OnInit, OnDestroy {
     return `${environment.apiUrl}/projects/${this.project.id}/plot/?${this.ts}`;
   }
 
+  // based on https://stackoverflow.com/questions/49102724/angular-5-copy-to-clipboard
+  copyId(id: string){
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = id;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  }
 }

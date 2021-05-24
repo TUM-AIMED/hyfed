@@ -24,7 +24,7 @@
             "tsConfig": "tsconfig.app.json",
             "aot": false,
             "assets": [
-              "src/assets/logos/hyfed_icon.ico",
+              "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
@@ -89,7 +89,7 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": [
-              "src/assets/logos/hyfed_icon.ico",
+              "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
@@ -124,6 +124,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "hyfed_webapp"
+    }
+  },
+  "defaultProject": "hyfed_webapp",
+  "cli": {
+    "analytics": "141d7e65-474f-4e69-848d-bc1523ad6c25"
+  }
 }

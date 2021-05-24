@@ -22,7 +22,7 @@
             The creator of the project will be the <b>coordinator</b>.
           </p>
 
-          <!-- BEGIN  MyTool SPECIFIC TOOL SELECTION MENU -->
+     <!-- BEGIN TOOL SELECTION MENU -->
           <div class="field">
             <label class="label" for="npTool">Tool</label>
             <div class="select">
@@ -32,21 +32,21 @@
               </select>
             </div>
           </div>
-          <!-- END MyTool SPECIFIC TOOL SELECTION MENU -->
+          <!-- END TOOL SELECTION MENU -->
 
-          <!-- BEGIN MyTool SPECIFIC ALGORITHM SELECTION MENU -->
+          <!-- BEGIN ALGORITHM SELECTION MENU -->
           <div class="field" *ngIf="newProject.tool === 'MyTool'">
               <label class="label" for="npMyToolAlgorithm">Algorithm</label>
               <div class="select">
                 <select class="input" [(ngModel)]="newProject.algorithm" id="npMyToolAlgorithm">
                   <option value="Select">Select</option>
-                  <option value="My-Algorithm">My-Algorithm</option>
+                  <option value="MyTool-Algorithm">MyTool-Algorithm</option>
                 </select>
               </div>
           </div>
-          <!-- END MyTool SPECIFIC ALGORITHM SELECTION MENU -->
+          <!-- END ALGORITHM SELECTION MENU -->
 
-          <!-- BEGIN MyTool SPECIFIC Name AND Description FIELDS -->
+          <!-- BEGIN Name AND Description FIELDS -->
           <div class="field" *ngIf="newProject.tool === 'MyTool' && newProject.algorithm !== 'Select'">
               <label class="label" for="npName">Name</label>
               <div class="control" style="width:30%">
@@ -60,9 +60,9 @@
                 <input class="input" [(ngModel)]="newProject.description" id="npDescription" placeholder="Description of the project" />
               </div>
           </div>
-          <!-- END MyTool SPECIFIC Name AND Description FIELDS -->
+          <!-- END Name AND Description FIELDS -->
 
-          <!-- BEGIN MyTool SPECIFIC DISABLE/ENABLE Create BUTTON -->
+          <!-- BEGIN DISABLE/ENABLE Create BUTTON -->
           <div class="field">
             <div class="control">
               <div class="buttons">
@@ -75,7 +75,8 @@
               </div>
             </div>
           </div>
-          <!-- END MyTool SPECIFIC DISABLE/ENABLE Create BUTTON -->
+          <!-- END DISABLE/ENABLE Create BUTTON -->
+
 
         </div>
       </div>
@@ -90,9 +91,8 @@
             <thead>
             <tr>
               <th>ID</th>
-              <th>Tool</th>
-              <th>Algorithm</th>
               <th>Name</th>
+              <th>Association test</th>
               <th>Status</th>
               <th>Step</th>
               <th>Round</th>
@@ -109,13 +109,10 @@
                 </a>
               </td>
               <td>
-                   {{proj.tool}}
+                  {{proj.name}}
               </td>
               <td>
                   {{proj.algorithm}}
-              </td>
-              <td>
-                  {{proj.name}}
               </td>
               <td>
                 <div class="tags">
