@@ -40,7 +40,7 @@ defined in the project model file. Moreover, add the (hyper-)parameter related a
     type ToolType = 'Select' | 'Stats'; // ADD THE TOOL NAME(S) HERE
     type AlgorithmType = 'Select' | 'Variance' | 'Logistic-Regression'; // ADD THE ALGORITHM NAME(S) HERE
     
-    type StatusType = 'Created' | 'Parameters Ready' | 'Aggregating' | 'Done' | 'Aborted' | 'Failed';
+    type StatusType = 'Created' | 'Parameters Ready' | 'Waiting for Compensator' | 'Aggregating' | 'Done' | 'Aborted' | 'Failed';
      
     export interface ProjectJson extends IModelJson {
     
@@ -230,17 +230,18 @@ To this end, add the following HTML code segments to the
    
     <!-- THE CODE SECTION AT THE BEGINNING OF THE FILE IS NOT SHOWN BECAUSE OF THE SPACE LIMITATION -->
     
+
     <!-- BEGIN Stats SPECIFIC (HYPER-)PARAMETER VALUES -->
     <p *ngIf="project.tool == 'Stats'">
-        Features: {{project.features}}
+      <b>Features:</b> {{project.features}}
     </p>
-   
+
     <p *ngIf="project.tool == 'Stats' && project.algorithm == 'Logistic-Regression'">
-        Learning rate: {{project.learningRate}}
+      <b>Learning rate:</b> {{project.learningRate}}
     </p>
-    
+
     <p *ngIf="project.tool == 'Stats' && project.algorithm == 'Logistic-Regression'">
-        Max iterations: {{project.maxIterations}}
+      <b>Max iterations:</b> {{project.maxIterations}}
     </p>
     <!-- END Stats SPECIFIC (HYPER-)PARAMETER VALUES -->
    
