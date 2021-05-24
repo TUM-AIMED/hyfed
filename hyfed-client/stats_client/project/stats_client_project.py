@@ -33,13 +33,13 @@ class StatsClientProject(HyFedClientProject):
         A class that provides the computation functions to compute local parameters
     """
 
-    def __init__(self, username, token, project_id, server_url,
-                 algorithm, name, description, coordinator, result_dir, log_dir,
+    def __init__(self, username, token, project_id, server_url, compensator_url,
+                 tool, algorithm, name, description, coordinator, result_dir, log_dir,
                  stats_dataset_file_path, features, learning_rate, max_iterations):  # Stats specific arguments
 
         super().__init__(username=username, token=token, project_id=project_id, server_url=server_url,
-                         algorithm=algorithm, name=name, description=description, coordinator=coordinator,
-                         result_dir=result_dir, log_dir=log_dir)
+                         compensator_url=compensator_url, tool=tool, algorithm=algorithm, name=name, description=description,
+                         coordinator=coordinator, result_dir=result_dir, log_dir=log_dir)
 
         # Stats specific project attributes
         self.features = [feature.strip() for feature in features.split(',')]
@@ -68,7 +68,8 @@ class StatsClientProject(HyFedClientProject):
             # get the number of samples
             sample_count = self.x_matrix.shape[0]
 
-            # send the sample count to the server
+            # share the noisy sample count with the server and noise with the compensator
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.SAMPLE_COUNT] = sample_count
 
         except Exception as io_exception:
@@ -81,7 +82,8 @@ class StatsClientProject(HyFedClientProject):
         try:
             sample_sum = np.sum(self.x_matrix, axis=0)
 
-            # send sample sum to the server
+            # hide the original value of the sample sum from the server
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.SUM] = sample_sum
 
         except Exception as sum_exception:
@@ -98,7 +100,8 @@ class StatsClientProject(HyFedClientProject):
             # compute sse
             sse = np.sum(np.square(self.x_matrix - global_mean), axis=0)
 
-            # share sse with the server
+            # hide the sse value from the server
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.SSE] = sse
 
         except Exception as sse_exception:
@@ -126,7 +129,8 @@ class StatsClientProject(HyFedClientProject):
             # computed weighted local beta
             weighted_local_beta = local_sample_count * local_beta
 
-            # share the weighted local betas with the server
+            # hide the weighted local beta values from the server
+            self.set_compensator_flag()
             self.local_parameters[StatsLocalParameter.BETA] = weighted_local_beta
 
         except Exception as beta_exception:

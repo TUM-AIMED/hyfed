@@ -22,36 +22,52 @@ from hyfed_client.util.hyfed_parameters import Parameter, CoordinationParameter,
 from hyfed_client.util.gui import add_label_and_textbox, add_label_and_password_box, add_option_menu, add_button
 from hyfed_client.util.endpoint import EndPoint
 
-import tkinter as tk
 import requests
 import pickle
 from tkinter import messagebox
+import tkinter as tk
 
 
 class JoinWidget(tk.Tk):
-    """ A widget enabling the participant to enter the username, password, etc to join the project """
+    """ A widget enabling the participants to enter the username, password, etc to join the project """
 
     def __init__(self, title,
                  local_server_name="Localhost",
-                 external_server_name="AIMed-TUM",
                  local_server_url="http://localhost:8000",
-                 external_server_url="https://aimed_tum_url"):
+                 local_compensator_name="Localhost",
+                 local_compensator_url="http://localhost:8001",
+                 external_server_name="AIMed-TUM",
+                 external_server_url="https://aimed_tum_url",
+                 external_compensator_name="MRI-TUM",
+                 external_compensator_url="https://mri_tum_url",
+                 ):
 
         super().__init__()
 
         self.title(title)
-        self.local_server_name = local_server_name
-        self.external_server_name = external_server_name
-        self.local_server_url = local_server_url
-        self.external_server_url = external_server_url
 
-        # a flag to indicate whether or not join has been successful
+        # server and compensator related attributes
+        self.local_server_name = local_server_name
+        self.local_server_url = local_server_url
+        self.local_compensator_name = local_compensator_name
+        self.local_compensator_url = local_compensator_url
+
+        self.external_server_name = external_server_name
+        self.external_server_url = external_server_url
+        self.external_compensator_name = external_compensator_name
+        self.external_compensator_url = external_compensator_url
+
+        # a flag to indicate whether or not join process has been successful
         self.joined = False
 
-        # Joint widget GUI
+        # joint widget GUI
         self.row_number = 1
+        self.textbox_width = 20
         self.server_choice = add_option_menu(widget=self, label_text='Server',
                                              choices=(local_server_name, external_server_name))
+
+        self.compensator_choice = add_option_menu(widget=self, label_text='Compensator',
+                                                  choices=(local_compensator_name, external_compensator_name))
 
         self.username_entry = add_label_and_textbox(widget=self, label_text="Username")
         self.password_entry = add_label_and_password_box(widget=self, label_text="Password")
@@ -61,11 +77,13 @@ class JoinWidget(tk.Tk):
         add_button(widget=self, button_label="Quit", column_number=0, on_click_function=self.quit_project)
         add_button(widget=self, button_label="Join", column_number=1, on_click_function=self.join_project)
 
-        #  These attributes are re-initialized in join_project function
+        #  these attributes are re-initialized in the join_project function
         self.username = ''
         self.token = ''
         self.server_name = ''
         self.server_url = ''
+        self.compensator_name = ''
+        self.compensator_url = ''
         self.project_id = ''
 
         # connection and and authentication parameters will be used in the next widgets (e.g. project info widget)
@@ -73,7 +91,7 @@ class JoinWidget(tk.Tk):
         self.authentication_parameters = {}
 
     def show(self):
-        """ Show the Join widget """
+        """ Show the join widget """
 
         self.resizable(0, 0)
         self.mainloop()
@@ -85,10 +103,11 @@ class JoinWidget(tk.Tk):
         self.destroy()
 
     def join_project(self):
-        """ Get the value of authentication parameters from the participant and send a join request to server """
+        """ Get the value of authentication parameters from the participant and send join request to server """
 
-        # extract the values entered by the user
+        # extract the values entered by the participant
         self.server_name = self.server_choice.get()
+        self.compensator_name = self.compensator_choice.get()
         self.username = self.username_entry.get()
         password = self.password_entry.get()
         self.token = self.token_entry.get()
@@ -99,6 +118,12 @@ class JoinWidget(tk.Tk):
             self.server_url = self.local_server_url
         elif self.server_name == self.external_server_name:
             self.server_url = self.external_server_url
+
+        # initialize compensator url based on compensator name
+        if self.compensator_name == self.local_compensator_name:
+            self.compensator_url = self.local_compensator_url
+        elif self.compensator_name == self.external_compensator_name:
+            self.compensator_url = self.external_compensator_url
 
         # Ensure none of the input entries are empty
         if not self.username:
@@ -115,6 +140,14 @@ class JoinWidget(tk.Tk):
 
         if not self.token:
             messagebox.showerror("Error", "Token cannot be empty!")
+            return
+
+        # ensure server and compensator IPs are different
+        server_ip = self.server_url.split(':')[1][2:]
+        compensator_ip = self.compensator_url.split(':')[1][2:]
+
+        if server_ip == compensator_ip and server_ip != '127.0.0.1' and server_ip != 'localhost':
+            messagebox.showerror("Error", "Server and compensator IPs must be different!")
             return
 
         # send join request to the server
@@ -139,6 +172,7 @@ class JoinWidget(tk.Tk):
             messagebox.showerror("Error", "Connection failed!")
             return
 
+        # check whether join was successful
         json_response = pickle.loads(response.content)
         self.joined = json_response[CoordinationParameter.CLIENT_JOINED]
 
@@ -149,11 +183,13 @@ class JoinWidget(tk.Tk):
         # initialize connection parameters
         self.connection_parameters[ConnectionParameter.SERVER_NAME] = self.server_name
         self.connection_parameters[ConnectionParameter.SERVER_URL] = self.server_url
+        self.connection_parameters[ConnectionParameter.COMPENSATOR_NAME] = self.compensator_name
+        self.connection_parameters[ConnectionParameter.COMPENSATOR_URL] = self.compensator_url
 
         # initialize authentication parameters
         self.authentication_parameters[AuthenticationParameter.USERNAME] = self.username
-        self.authentication_parameters[AuthenticationParameter.TOKEN] = self.token
         self.authentication_parameters[AuthenticationParameter.PROJECT_ID] = self.project_id
+        self.authentication_parameters[AuthenticationParameter.TOKEN] = self.token
 
         self.destroy()
 

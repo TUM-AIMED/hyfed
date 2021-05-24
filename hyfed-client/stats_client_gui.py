@@ -18,7 +18,7 @@
 """
 
 from hyfed_client.widget.join_widget import JoinWidget
-from hyfed_client.widget.project_status_widget import ProjectStatusWidget
+from hyfed_client.widget.hyfed_project_status_widget import HyFedProjectStatusWidget
 from hyfed_client.util.hyfed_parameters import HyFedProjectParameter, ConnectionParameter, AuthenticationParameter
 
 from stats_client.widget.stats_project_info_widget import StatsProjectInfoWidget
@@ -40,9 +40,13 @@ class StatsClientGUI:
         # create the join widget
         self.join_widget = JoinWidget(title="Stats Client",
                                       local_server_name="Localhost",
-                                      external_server_name="Stats-Server",
                                       local_server_url="http://localhost:8000",
-                                      external_server_url="https://stats_server_url")
+                                      local_compensator_name="Localhost",
+                                      local_compensator_url="http://localhost:8001",
+                                      external_server_name="Stats-Server",
+                                      external_server_url="https://stats_server_url",
+                                      external_compensator_name="Stats-Compensator",
+                                      external_compensator_url="https://stats_compensator_url")
 
         # show the join widget
         self.join_widget.show()
@@ -100,10 +104,12 @@ class StatsClientGUI:
         project_parameters = self.stats_project_info_widget.get_project_parameters()
 
         server_url = connection_parameters[ConnectionParameter.SERVER_URL]
+        compensator_url = connection_parameters[ConnectionParameter.COMPENSATOR_URL]
         username = authentication_parameters[AuthenticationParameter.USERNAME]
         token = authentication_parameters[AuthenticationParameter.TOKEN]
         project_id = authentication_parameters[AuthenticationParameter.PROJECT_ID]
 
+        tool = project_parameters[HyFedProjectParameter.TOOL]
         algorithm = project_parameters[HyFedProjectParameter.ALGORITHM]
         project_name = project_parameters[HyFedProjectParameter.NAME]
         project_description = project_parameters[HyFedProjectParameter.DESCRIPTION]
@@ -120,7 +126,9 @@ class StatsClientGUI:
         stats_client_project = StatsClientProject(username=username,
                                                   token=token,
                                                   server_url=server_url,
+                                                  compensator_url=compensator_url,
                                                   project_id=project_id,
+                                                  tool=tool,
                                                   algorithm=algorithm,
                                                   name=project_name,
                                                   description=project_description,
@@ -138,10 +146,14 @@ class StatsClientGUI:
         stats_project_thread.start()
 
         # create and show Stats project status widget
-        stats_project_status_widget = ProjectStatusWidget(title="Stats Project Status",
-                                                          project=stats_client_project)
+        stats_project_status_widget = HyFedProjectStatusWidget(title="Stats Project Status",
+                                                               project=stats_client_project)
+        stats_project_status_widget.add_static_labels()
+        stats_project_status_widget.add_progress_labels()
+        stats_project_status_widget.add_status_labels()
         stats_project_status_widget.add_log_and_quit_buttons()
         stats_project_status_widget.show()
 
 
-client_gui = StatsClientGUI()
+if __name__ == "__main__":
+    client_gui = StatsClientGUI()

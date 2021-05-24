@@ -23,7 +23,7 @@ from tkinter import messagebox
 
 
 class HyFedDatasetWidget(tk.Tk):
-    """ The base widget for derived dataset widgets """
+    """ The base widget for the derived dataset widgets """
 
     def __init__(self, title):
 
@@ -32,6 +32,7 @@ class HyFedDatasetWidget(tk.Tk):
         self.title(title)
 
         self.row_number = 1
+        self.textbox_width = 20
 
         self.run_clicked = False
 
@@ -55,9 +56,11 @@ class HyFedDatasetWidget(tk.Tk):
         self.destroy()
 
     def ask_quit(self):
+        """ Show exit confirmation message box to the participant """
+
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.destroy()
 
-    # getter functions
+    # getter function
     def is_run_clicked(self):
         return self.run_clicked

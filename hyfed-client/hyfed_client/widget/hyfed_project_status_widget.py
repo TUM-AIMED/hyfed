@@ -26,8 +26,8 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 
 
-class ProjectStatusWidget(tk.Tk):
-    """ This widget shows the status of the project such as current communication round, project status, and etc """
+class HyFedProjectStatusWidget(tk.Tk):
+    """ This widget shows progress and status of project such as current communication round, project status, etc """
 
     def __init__(self, title, project):
 
@@ -36,20 +36,16 @@ class ProjectStatusWidget(tk.Tk):
         self.title(title)
         self.project = project
 
-        # project status widget
+        # to keep track the rows in the project status widget
         self.row_number = 1
-        add_labels(widget=self, left_label_text="Project Name: ", right_label_text=self.project.get_name())
 
-        add_labels(widget=self, left_label_text='Algorithm: ', right_label_text=self.project.get_algorithm())
+        # project progress related labels; re-initialized in add_progress_labels
+        self.comm_round_label = None
+        self.step_label = None
 
-        self.comm_round_label = add_labels(widget=self, left_label_text="Communication Round:",
-                                           right_label_text=self.project.get_comm_round())
-        self.status_label = add_labels(widget=self, left_label_text='Project Status:',
-                                       right_label_text=self.project.get_project_status())
-        self.step_label = add_labels(widget=self, left_label_text='Project Step:',
-                                     right_label_text=self.project.get_project_step())
-        self.operation_label = add_labels(widget=self, left_label_text='Client Operation:',
-                                          right_label_text=self.project.get_client_operation())
+        # project status related labels; re-initialized in add_status_labels
+        self.status_label = None
+        self.operation_label = None
 
         # for blinking project status after project is done/failed/aborted
         self.blinking_color = 'black'
@@ -77,6 +73,28 @@ class ProjectStatusWidget(tk.Tk):
 
         self.mainloop()
 
+    def add_static_labels(self):
+        """ Add labels whose values do not change, e.g. project name or algorithm """
+
+        add_labels(widget=self, left_label_text="Project Name:", right_label_text=self.project.get_name())
+        add_labels(widget=self, left_label_text="Algorithm:", right_label_text=self.project.get_algorithm())
+
+    def add_progress_labels(self):
+        """ Add labels indicating the progress of the project, e.g. communication round or project step """
+
+        self.comm_round_label = add_labels(widget=self, left_label_text="Communication Round:",
+                                           right_label_text=self.project.get_comm_round())
+        self.step_label = add_labels(widget=self, left_label_text="Project Step:",
+                                     right_label_text=self.project.get_project_step())
+
+    def add_status_labels(self):
+        """ Add labels related to the status of the project, e.g. project status or client operations """
+
+        self.status_label = add_labels(widget=self, left_label_text="Project Status:",
+                                       right_label_text=self.project.get_project_status())
+        self.operation_label = add_labels(widget=self, left_label_text="Client Operation:",
+                                          right_label_text=self.project.get_client_operation())
+
     def add_log_and_quit_buttons(self):
         """ Quit, show & export log buttons """
 
@@ -87,29 +105,31 @@ class ProjectStatusWidget(tk.Tk):
         add_button(widget=self, button_label="Export Log", column_number=2,
                    on_click_function=self.export_log, sticky="")
 
+    def update_progress_labels(self):
+        """ Update the value of the progress labels, e.g. communication round  and project step """
+
+        self.comm_round_label.configure(text=self.project.get_comm_round())
+        self.step_label.configure(text=self.project.get_project_step_text())
+
+    def update_status_labels(self):
+        """" Update the value of the status labels """
+
+        self.status_label.configure(text=self.project.get_project_status_text())
+        self.operation_label.configure(text=self.project.get_client_operation())
+
     def update_status_widget(self):
-        """ Update project status widget (e.g. communication round, client operation, etc)  """
+        """ Update project status widget (e.g. progress and status labels) """
 
         try:
-
-            # communication round
-            self.comm_round_label.configure(text=self.project.get_comm_round())
-
-            # current client operation
-            self.operation_label.configure(text=self.project.get_client_operation())
-
-            # project status
-            self.status_label.configure(text=self.project.get_project_status_text())
-
-            # project step
-            self.step_label.configure(text=self.project.get_project_step_text())
+            self.update_progress_labels()
+            self.update_status_labels()
 
             self.after(500, self.update_status_widget)  # update labels every 500 ms
         except Exception as exp:
             pass
 
     def ask_quit(self):
-        """ Ask participant whether he/she is sure to close the widget """
+        """ Ask participant whether he/she is sure about closing the widget """
 
         if self.project.get_client_operation() == ClientOperation.FINISHING_UP:
             messagebox.showwarning("Wait", "Finishing up the project!")
@@ -142,7 +162,7 @@ class ProjectStatusWidget(tk.Tk):
 
     # ############ log widget functions #########
     def show_log_widget(self, log_widget_title='Log'):
-        """ open log widget """
+        """ Open log widget """
 
         # if log widget is already open, do nothing
         if self.log_widget is not None:
@@ -160,7 +180,7 @@ class ProjectStatusWidget(tk.Tk):
         self.log_widget.mainloop()
 
     def close_log_widget(self):
-        """ Quit the log widget """
+        """ Destroy the log widget """
 
         try:
             self.log_widget.destroy()
@@ -190,7 +210,7 @@ class ProjectStatusWidget(tk.Tk):
             pass
 
     def export_log(self):
-        """ Export log messages to a user selected file """
+        """ Export log messages to a participant selected file """
 
         log_file_path = filedialog.asksaveasfilename(defaultextension=".log")
         if log_file_path is None:

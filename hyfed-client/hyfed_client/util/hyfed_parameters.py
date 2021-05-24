@@ -1,5 +1,5 @@
 """
-    Parameters exchanged client <-> server
+    Parameters exchanged client <-> server and client <-> compensator
 
     Copyright 2021 Reza NasiriGerdeh and Reihaneh TorkzadehMahani. All Rights Reserved.
 
@@ -19,35 +19,52 @@
 
 class Parameter:
     """
-        There are seven general categories of the parameters exchanged between the clients and the server:
+        There are nine general categories of the parameters exchanged clients <-> server and client <-> compensator:
         client -> server: authentication, synchronization, monitoring, and local parameters
-        server -> client: coordination, project, global parameters
+        server -> client: coordination, project, and global parameters
+        client -> compensator: authentication, synchronization, connection, and compensation parameters
+        compensator -> client: synchronization parameters
     """
 
     AUTHENTICATION = "authentication_parameter"
     SYNCHRONIZATION = "synchronization_parameter"
     MONITORING = "monitoring_parameter"
-    LOCAL = "local_parameter"
     PROJECT = "project_parameter"
     COORDINATION = "coordination_parameter"
+    CONNECTION = "connection_parameter"
     GLOBAL = "global_parameter"
+    LOCAL = "local_parameter"
+    COMPENSATION = "compensation_parameter"
 
 
 class AuthenticationParameter:
-    """ Client -> server parameters to authenticate the client """
+    """  Parameters to authenticate the client """
 
+    # client -> server
     USERNAME = "username"
     PASSWORD = "password"
     PROJECT_ID = "project_id"
     TOKEN = "token"
 
+    # client -> compensator
+    HASH_USERNAME = "hash_username"
+    HASH_TOKEN = "hash_token"
+    HASH_PROJECT_ID = "hash_project_id"
+
 
 class SyncParameter:
-    """ Client -> server parameters to ensure the clients and server are synced """
+    """ Client -> server or client <-> compensator parameters to ensure clients, server, and compensator are synced """
 
+    # client -> server and client -> compensator
     PROJECT_STEP = "project_step"
     COMM_ROUND = "communication_round"
+
+    # client -> server
     OPERATION_STATUS = "operation_status"
+    COMPENSATOR_FLAG = "compensator_flag"
+
+    # compensator -> client
+    SHOULD_RETRY = "should_retry"
 
 
 class MonitoringParameter:
@@ -60,9 +77,10 @@ class MonitoringParameter:
 
 
 class HyFedProjectParameter:
-    """ Server -> client project info parameters """
+    """ Server -> client project parameters """
 
     ID = "id"
+    TOOL = "tool"
     ALGORITHM = "algorithm"
     NAME = "name"
     DESCRIPTION = "description"
@@ -81,44 +99,9 @@ class CoordinationParameter:
 
 
 class ConnectionParameter:
-    """ Only used in the client """
+    """ Mostly used in the client """
+
     SERVER_NAME = "server_name"
-    SERVER_URL = "server_url"
-
-
-class ClientParameter:
-    """
-        A class to bundle client parameters including authentication, sync, monitoring, and local parameters
-        that are sent to the server in each communication round
-    """
-
-    def __init__(self):
-        self.authentication_parameters = {}
-        self.sync_parameters = {}
-        self.monitoring_parameters = {}
-        self.local_parameters = {}
-
-    def set_authentication_parameters(self, username, token, project_id):
-        self.authentication_parameters[AuthenticationParameter.USERNAME] = username
-        self.authentication_parameters[AuthenticationParameter.TOKEN] = token
-        self.authentication_parameters[AuthenticationParameter.PROJECT_ID] = project_id
-
-    def set_sync_parameters(self, project_step, comm_round, operation_status):
-        self.sync_parameters[SyncParameter.PROJECT_STEP] = project_step
-        self.sync_parameters[SyncParameter.COMM_ROUND] = comm_round
-        self.sync_parameters[SyncParameter.OPERATION_STATUS] = operation_status
-
-    def set_monitoring_parameters(self, computation_time, network_send_time, network_receive_time, idle_time):
-        self.monitoring_parameters[MonitoringParameter.COMPUTATION_TIME] = computation_time
-        self.monitoring_parameters[MonitoringParameter.NETWORK_SEND_TIME] = network_send_time
-        self.monitoring_parameters[MonitoringParameter.NETWORK_RECEIVE_TIME] = network_receive_time
-        self.monitoring_parameters[MonitoringParameter.IDLE_TIME] = idle_time
-
-    def set_local_parameters(self, local_parameters):
-        self.local_parameters = local_parameters
-
-    def jsonify_parameters(self):
-        return {Parameter.AUTHENTICATION: self.authentication_parameters,
-                Parameter.SYNCHRONIZATION: self.sync_parameters,
-                Parameter.MONITORING: self.monitoring_parameters,
-                Parameter.LOCAL: self.local_parameters}
+    SERVER_URL = "server_url"  # client -> compensator
+    COMPENSATOR_NAME = "compensator_name"
+    COMPENSATOR_URL = "compensator_url"

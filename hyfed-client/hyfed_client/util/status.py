@@ -21,6 +21,7 @@
 class ProjectStatus:
     CREATED = "Created"
     PARAMETERS_READY = "Parameters Ready"
+    WAITING_FOR_COMPENSATOR = "Waiting for Compensator"
     AGGREGATING = "Aggregating"
     DONE = "Done"
     ABORTED = "Aborted"

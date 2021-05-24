@@ -22,14 +22,14 @@ from hyfed_client.util.hyfed_parameters import AuthenticationParameter, Paramete
 from hyfed_client.util.endpoint import EndPoint
 
 import requests
-import tkinter as tk
 import pickle
 import time
 from tkinter import messagebox
+import tkinter as tk
 
 
 class HyFedProjectInfoWidget(tk.Tk):
-    """ This widget employs the authentication parameters to obtain the project info from the server """
+    """ This widget employs the authentication and connection parameters to obtain the project info from the server """
 
     def __init__(self, title, authentication_parameters, connection_parameters):
 
@@ -40,23 +40,30 @@ class HyFedProjectInfoWidget(tk.Tk):
         # required to get project info from the server
         self.server_url = connection_parameters[ConnectionParameter.SERVER_URL]
         self.username = authentication_parameters[AuthenticationParameter.USERNAME]
-        self.token = authentication_parameters[AuthenticationParameter.TOKEN]
         self.project_id = authentication_parameters[AuthenticationParameter.PROJECT_ID]
+        self.token = authentication_parameters[AuthenticationParameter.TOKEN]
 
-        # self.project_parameters will be initialized in obtain_project_info function
-        self.project_parameters = {}
+        # re-initialized in the obtain_project_info function
+        self.project_parameters = dict()
 
         # a flag to indicate whether the participant accepted to proceed with the project
         self.accepted = False
 
         # project info widget GUI
         self.row_number = 1
-        add_label_and_textbox(self, label_text="Username",
-                              value=self.username, status='disabled')
+        self.textbox_width = 30
+
         add_label_and_textbox(self, label_text="Server Name",
                               value=connection_parameters[ConnectionParameter.SERVER_NAME], status='disabled')
         add_label_and_textbox(self, label_text="Server URL",
                               value=self.server_url, status='disabled')
+        add_label_and_textbox(self, label_text="Compensator Name",
+                              value=connection_parameters[ConnectionParameter.COMPENSATOR_NAME], status='disabled')
+
+        add_label_and_textbox(self, label_text="Compensator URL",
+                              value=connection_parameters[ConnectionParameter.COMPENSATOR_URL], status='disabled')
+        add_label_and_textbox(self, label_text="Participant",
+                              value=self.username, status='disabled')
 
     def show(self):
         """ Show the project info widget """
@@ -86,29 +93,29 @@ class HyFedProjectInfoWidget(tk.Tk):
                 # create request body using authentication parameter values
                 request_body = {Parameter.AUTHENTICATION:
                                     {AuthenticationParameter.USERNAME: self.username,
-                                     AuthenticationParameter.TOKEN: self.token,
-                                     AuthenticationParameter.PROJECT_ID: self.project_id}
+                                     AuthenticationParameter.PROJECT_ID: self.project_id,
+                                     AuthenticationParameter.TOKEN: self.token
+                                    }
                                 }
 
-                serialized_request_body = pickle.dumps(request_body)
-
                 # send a request to server to obtain the project info
+                serialized_request_body = pickle.dumps(request_body)
                 response = requests.get(url=f'{self.server_url}/{EndPoint.PROJECT_INFO}',
                                         data=serialized_request_body,
                                         timeout=60)
 
-                if response.status_code != 200:
-                    print(f"Got response {response.status_code}!")
-                    time.sleep(10)
-                    continue
+                if response.status_code == 200:
+                    # deserialize response and initialize project_parameters
+                    json_response = pickle.loads(response.content)
+                    self.project_parameters = json_response[Parameter.PROJECT]
+                    return
 
-                # deserialize response and initialize project_parameters
-                json_response = pickle.loads(response.content)
-                self.project_parameters = json_response[Parameter.PROJECT]
-                return
+                print(f"Got response {response.status_code}!")
+                time.sleep(10)
+                continue
 
-            except Exception as exception:
-                print(exception)
+            except Exception as project_info_exception:
+                print(project_info_exception)
                 time.sleep(10)
 
     def add_project_basic_info(self):
@@ -117,21 +124,30 @@ class HyFedProjectInfoWidget(tk.Tk):
             project name, project description, and coordinator to the project info widget
         """
 
-        add_label_and_textbox(self, label_text="Project ID",
-                              value=self.project_parameters[HyFedProjectParameter.ID], status='disabled')
-        add_label_and_textbox(self, label_text="Token",
-                              value=self.token, status='disabled')
-        add_label_and_textbox(self, label_text="Project Name",
-                              value=self.project_parameters[HyFedProjectParameter.NAME], status='disabled')
-        add_label_and_textbox(self, label_text="Project Description",
-                              value=self.project_parameters[HyFedProjectParameter.DESCRIPTION], status='disabled')
-
-        add_label_and_textbox(self, label_text="Algorithm",
-                              value=self.project_parameters[HyFedProjectParameter.ALGORITHM], status='disabled')
         add_label_and_textbox(self, label_text="Coordinator",
                               value=self.project_parameters[HyFedProjectParameter.COORDINATOR], status='disabled')
 
+        add_label_and_textbox(self, label_text="Project ID",
+                              value=self.project_parameters[HyFedProjectParameter.ID], status='disabled')
+
+        add_label_and_textbox(self, label_text="Token",
+                              value=self.token, status='disabled')
+
+        add_label_and_textbox(self, label_text="Tool",
+                              value=self.project_parameters[HyFedProjectParameter.TOOL], status='disabled')
+
+        add_label_and_textbox(self, label_text="Algorithm",
+                              value=self.project_parameters[HyFedProjectParameter.ALGORITHM], status='disabled')
+
+        add_label_and_textbox(self, label_text="Project Name",
+                              value=self.project_parameters[HyFedProjectParameter.NAME], status='disabled')
+
+        add_label_and_textbox(self, label_text="Project Description",
+                              value=self.project_parameters[HyFedProjectParameter.DESCRIPTION], status='disabled')
+
     def ask_quit(self):
+        """ Ask exit confirmation from the participant """
+
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.destroy()
 

@@ -47,7 +47,7 @@ def add_label_and_textbox(widget, label_text, label_font=('times', 11), padx=10,
     label.config(font=label_font)
     label.grid(row=widget.row_number, column=0, padx=padx, pady=pady, sticky=sticky)
 
-    text_entry = tk.Entry(widget)
+    text_entry = tk.Entry(widget, width=widget.textbox_width)
 
     text_entry.config(font=label_font)
     if value:
@@ -68,7 +68,7 @@ def add_label_and_password_box(widget, label_text, label_font=('times', 11), pad
     label.config(font=label_font)
     label.grid(row=widget.row_number, column=0, padx=padx, pady=pady, sticky=sticky)
 
-    password_entry = tk.Entry(widget, show='*')
+    password_entry = tk.Entry(widget, show='*', width=widget.textbox_width)
     password_entry.config(font=label_font)
     password_entry.grid(row=widget.row_number, column=1, padx=padx, pady=pady, sticky=sticky)
 

@@ -29,12 +29,12 @@ class MyToolClientProject(HyFedClientProject):
         A class that provides the computation functions to compute local parameters
     """
 
-    def __init__(self, username, token, project_id, server_url,
-                 algorithm, name, description, coordinator, result_dir, log_dir):
+    def __init__(self, username, token, project_id, server_url, compensator_url,
+                 tool, algorithm, name, description, coordinator, result_dir, log_dir):
 
         super().__init__(username=username, token=token, project_id=project_id, server_url=server_url,
-                         algorithm=algorithm, name=name, description=description, coordinator=coordinator,
-                         result_dir=result_dir, log_dir=log_dir)
+                         compensator_url=compensator_url, tool=tool, algorithm=algorithm, name=name, description=description,
+                         coordinator=coordinator, result_dir=result_dir, log_dir=log_dir)
 
     # ########## MyTool step functions
     def init_step(self):

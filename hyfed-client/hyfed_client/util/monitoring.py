@@ -1,6 +1,6 @@
 """
     A class to monitor/measure the computation, network send/receive, and idle time in the clients as well as
-    the aggregation time in the server
+    the aggregation time in the server and compensation time in the compensator
 
     Copyright 2021 Reza NasiriGerdeh. All Rights Reserved.
 
@@ -23,7 +23,7 @@ import time
 class Timer:
     """
         A class to measure the different constituents of the runtime
-        (i.e. computation, network send, network receive, idle, and aggregation). Timer is additive, i.e. it keep tracks
+        (i.e. computation, network send, network receive, idle, aggregation, and compensation). Timer is additive, i.e. it keep tracks
         the sum of the statistics up to the PREVIOUS communication round. This is because network send time up to
         the current round cannot be computed in the current round. new_round function is called at the beginning of
         each round to update the total duration of the timer up to the previous round.
@@ -66,6 +66,13 @@ class Timer:
         self.this_round_duration += (time.time() - self.start_time)
         self.in_progress = False
 
+    def ignore(self):
+        if not self.in_progress:
+            print(f"{self.name} timer already stopped! It must be started first! Check the code to find the bug!")
+            return
+
+        self.in_progress = False
+
     def new_round(self):
         """ Update total statistics in the new round """
 
@@ -76,4 +83,3 @@ class Timer:
         """ Get total duration of the timer up to the previous communication round """
 
         return self.total_duration
-

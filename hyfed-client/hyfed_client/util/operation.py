@@ -21,8 +21,9 @@
 class ClientOperation:
     WAITING_FOR_START = "Waiting for Project Start"
     WAITING_FOR_AGGREGATION = "Waiting for Aggregation"
-    SENDING_LOCAL_PARAMETERS = "Sending Parameters"
-    COMPUTING_LOCAL_PARAMETERS = "Computing Parameters"
+    PREPARING_PARAMETERS = "Preparing Parameters"
+    SENDING_PARAMETERS = "Sending Parameters"
+    COMPUTING_PARAMETERS = "Computing Parameters"
     DOWNLOADING_RESULTS = "Downloading Results"
     FINISHING_UP = "Finishing up"
     ABORTED = "Aborted"

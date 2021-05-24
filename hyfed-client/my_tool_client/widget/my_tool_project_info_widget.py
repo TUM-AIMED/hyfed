@@ -19,6 +19,8 @@
 from hyfed_client.widget.hyfed_project_info_widget import HyFedProjectInfoWidget
 from hyfed_client.util.gui import add_label_and_textbox
 from my_tool_client.util.my_tool_parameters import MyToolProjectParameter
+from hyfed_client.util.hyfed_parameters import HyFedProjectParameter
+from my_tool_client.util.my_tool_algorithms import MyToolAlgorithm
 
 
 class MyToolProjectInfoWidget(HyFedProjectInfoWidget):
