@@ -28,7 +28,8 @@ to implement their own federated, privacy-preserving algorithms.
 
 To see how to **install** the **HyFed** framework, please see [HyFed-Install](hyfed-docs/readme/install_hyfed.md). <br/>
 To learn how to **develop** your own federated tool using the **HyFed** API, please see [HyFed-Develop](hyfed-docs/readme/develop_hyfed.md). <br/>
-To **run** the **HyFed** framework, please see [HyFed-Run](hyfed-docs/readme/run_hyfed.md). 
+To **run** the **HyFed** framework, please see [HyFed-Run](hyfed-docs/readme/run_hyfed.md). <br/>
+To learn more about **HyFed**, please read the [HyFed manuscript](https://arxiv.org/abs/2105.10545).
 
 ## License
 The **HyFed** source code is licensed under the Apache License Version 2.0. (C) 2021, the **HyFed** developers.
@@ -36,12 +37,14 @@ The **HyFed** source code is licensed under the Apache License Version 2.0. (C) 
 ## Citation
 If you use the **HyFed** framework in your study, please cite it as follows: <br />
    ```
-    @misc{hyfed2021,
-    title={HyFed: A Hybrid Federated Framework for Privacy-preserving Machine Learning},
-    author={Nasirigerdeh, Reza and Torkzadehmahani, Reihaneh and Matschinske, Julian and Baumbach, Jan and Rückert, Daniel and Kaissis, Georgios},
-    year={2021},
-    journal={arXiv preprint},
-    }
+   @misc{nasirigerdeh2021hyfed,
+          title={HyFed: A Hybrid Federated Framework for Privacy-preserving Machine Learning},
+          author={Reza Nasirigerdeh and Reihaneh Torkzadehmahani and Julian Matschinske and Jan Baumbach and Daniel Rueckert and Georgios Kaissis},
+          year={2021},
+          eprint={2105.10545},
+          archivePrefix={arXiv},
+          primaryClass={cs.LG}
+   }
    ```
 ## Contact
 In case of questions or problems regarding **HyFed**, please contact the **HyFed** developers: Reza Nasirigerdeh, Reihaneh Torkzadehmahani, and Julian Matschinske.
