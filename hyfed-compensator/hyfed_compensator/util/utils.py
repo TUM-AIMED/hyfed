@@ -16,95 +16,33 @@
     limitations under the License.
 """
 
+from hyfed_compensator.util.data_type import DataType
 import numpy as np
 
 import logging
 logger = logging.getLogger(__name__)
 
-
-def is_scalar(value):
-    """ e.g. 2 or 5.6 """
-
-    return type(value) == int or type(value) == float
+largest_prime_non_negative_int54 = 18014398509481951  # largest prime number that can fit in 54-bit integer
 
 
-def is_numpy_array(values):
-    """ e.g. array([1,2,3]) or array([[3.2, 4.1], [5, 6]]) """
-
-    return type(values) == np.ndarray
-
-
-def is_list_of_scalars(values):
-    """ e.g. [1,2,4,5] or [1.3, 4.2] """
-
-    if type(values) == list:
-
-        # empty list
-        if not values:
-            return False
-
-        # all elements of the list are scalar values
-        for val in values:
-            if not is_scalar(val):
-                return False
-
-        return True
-
-    return False
-
-
-def is_list_of_numpy_arrays(values):
-    """ e.g. [array([1,2,3]), array([1.2, 3.4])] """
-
-    if type(values) == list:
-
-        # empty list
-        if not values:
-            return False
-
-        # all elements of the list are numpy arrays
-        for val in values:
-            if not is_numpy_array(val):
-                return False
-
-        return True
-
-    return False
-
-
-def is_list_of_list_of_numpy_arrays(values):
-    """ e.g. [ [array([1.0, 2.0, 3.0]), array([1.2, 3.4])], [array([2.5, 2.1, 3.4]), array([5.5, 3.2])]] """
-
-    if type(values) == list:
-
-        # empty list
-        if not values:
-            return False
-
-        # all elements of the list are numpy arrays
-        for value in values:
-            if type(value) != list:
-                return False
-            for val in value:
-                if not is_numpy_array(val):
-                    return False
-
-        return True
-
-    return False
-
-
-def aggregate(noise_values):
+def aggregate(noise_values, data_type):
     """ Aggregate the noise values from the clients """
 
-    if is_list_of_scalars(noise_values):
+    # if noise_values is not a list or is an empty list
+    if not type(noise_values) == list or not noise_values:
+        return None
+
+    if data_type == DataType.NON_NEGATIVE_INTEGER:
+        return np.sum(noise_values) % largest_prime_non_negative_int54  # modular arithmetic
+
+    if data_type == DataType.NEGATIVE_INTEGER or data_type == DataType.FLOAT:
         return np.sum(noise_values)
 
-    if is_list_of_numpy_arrays(noise_values):
-        return np.sum(noise_values, axis=0)
+    if data_type == DataType.NUMPY_ARRAY_NON_NEGATIVE_INTEGER or data_type == DataType.LIST_NUMPY_ARRAY_NON_NEGATIVE_INTEGER:
+        return np.sum(noise_values, axis=0) % largest_prime_non_negative_int54
 
-    if is_list_of_list_of_numpy_arrays(noise_values):
-        for numpy_array_index in range(len(noise_values[0])):
-            return np.sum(np.array(noise_values), axis=0)
+    if data_type == DataType.NUMPY_ARRAY_NEGATIVE_INTEGER or data_type == DataType.NUMPY_ARRAY_FLOAT or \
+            data_type == DataType.LIST_NUMPY_ARRAY_NEGATIVE_INTEGER or data_type == DataType.LIST_NUMPY_ARRAY_FLOAT:
+        return np.sum(noise_values, axis=0)
 
     return None

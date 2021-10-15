@@ -24,6 +24,7 @@ from hyfed_server.util.utils import client_parameters_to_list
 from stats_server.util.stats_steps import StatsProjectStep
 from stats_server.util.stats_parameters import StatsGlobalParameter, StatsLocalParameter, StatsProjectParameter
 from stats_server.util.stats_algorithms import StatsAlgorithm
+from hyfed_server.util.data_type import DataType
 
 import numpy as np
 
@@ -89,8 +90,7 @@ class StatsServerProject(HyFedServerProject):
 
         try:
             # get the sample counts from the clients and compute global sample count, which is used in the next steps
-            sample_counts = client_parameters_to_list(self.local_parameters, StatsLocalParameter.SAMPLE_COUNT)
-            self.global_sample_count = np.sum(sample_counts)
+            self.global_sample_count = self.compute_aggregated_parameter(StatsLocalParameter.SAMPLE_COUNT, DataType.NON_NEGATIVE_INTEGER)
 
             # decide on the next step based on the algorithm name
             if self.algorithm == StatsAlgorithm.VARIANCE:
@@ -115,8 +115,7 @@ class StatsServerProject(HyFedServerProject):
 
         try:
             # get the sample sums from the clients and compute the global mean
-            sample_sums = client_parameters_to_list(self.local_parameters, StatsLocalParameter.SUM)
-            self.global_mean = np.sum(sample_sums, axis=0) / self.global_sample_count
+            self.global_mean = self.compute_aggregated_parameter(StatsLocalParameter.SUM, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # tell clients to go to the SSE step
             self.set_step(StatsProjectStep.SSE)
@@ -133,8 +132,7 @@ class StatsServerProject(HyFedServerProject):
 
         try:
             # get the sum square error values from the clients and compute the global variance
-            client_sse_list = client_parameters_to_list(self.local_parameters, StatsLocalParameter.SSE)
-            self.global_variance = np.sum(client_sse_list, axis=0) / self.global_sample_count
+            self.global_variance = self.compute_aggregated_parameter(StatsLocalParameter.SSE, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # this is the last computational step of the variance algorithm, so prepare the results
             self.prepare_results()
@@ -151,8 +149,7 @@ class StatsServerProject(HyFedServerProject):
 
         try:
             # get the weighted local betas from the clients, compute the global beta
-            weighted_betas = client_parameters_to_list(self.local_parameters, StatsLocalParameter.BETA)
-            self.global_beta = np.sum(weighted_betas, axis=0) / self.global_sample_count
+            self.global_beta  = self.compute_aggregated_parameter(StatsLocalParameter.BETA, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # if this is the last iteration, then prepare the results and tell clients to go to the Result step
             if self.current_iteration == self.max_iterations:

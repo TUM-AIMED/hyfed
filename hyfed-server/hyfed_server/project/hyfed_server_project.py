@@ -22,10 +22,11 @@ from hyfed_server.util.status import ProjectStatus, OperationStatus
 from hyfed_server.util.hyfed_parameters import Parameter, SyncParameter, MonitoringParameter, AuthenticationParameter, CoordinationParameter
 from hyfed_server.util.monitoring import Timer, Counter
 from hyfed_server.model.hyfed_models import HyFedProjectModel, TimerModel, TrafficModel
-from hyfed_server.util.utils import client_parameters_to_list
+from hyfed_server.util.utils import client_parameters_to_list, aggregate_parameters
 from hyfed_server.util.hyfed_steps import HyFedProjectStep
 from hyfed_server.models import UserModel
 from hyfed_server.util.hyfed_parameters import HyFedProjectParameter
+from hyfed_server.util.data_type import DataType
 
 from pathlib import Path
 import copy
@@ -394,6 +395,39 @@ class HyFedServerProject:
         """
 
         self.set_step(HyFedProjectStep.FINISHED)
+
+    def compute_aggregated_parameter(self, parameter_name, parameter_data_type):
+        clients_parameters = []
+        try:
+            for username in self.client_tokens.keys():
+                clients_parameters.append(self.local_parameters[username][parameter_name])
+
+            if self.compensator_flag:
+
+                # aggregate client noisy parameters
+                # modular arithmetic for client noisy parameters that are non-negative integers
+                aggregated_noisy_parameters = aggregate_parameters(clients_parameters, parameter_data_type)
+
+                # aggregated noise, already computed by the compensator using modular arithmetic for non-negative integers
+                aggregated_noise = self.local_parameters[self.hash_client_usernames][parameter_name]
+
+                # aggregate the aggregated-noise and aggregated-client-noisy-parameters
+                # modular arithmetic for non-negative integers
+                aggregated_value = aggregate_parameters([aggregated_noisy_parameters, aggregated_noise], parameter_data_type)
+
+            else:
+                if parameter_data_type == DataType.NON_NEGATIVE_INTEGER or \
+                   parameter_data_type == DataType.NEGATIVE_INTEGER or parameter_data_type == DataType.FLOAT:
+                        aggregated_value = np.sum(clients_parameters)
+
+                else:
+                    aggregated_value = np.sum(clients_parameters, axis=0)
+
+            return aggregated_value
+
+        except Exception as exp:
+            logger.error(exp)
+            return None
 
     # ########## clean-up|failure|abort function(s)
     def clean_up_project(self):

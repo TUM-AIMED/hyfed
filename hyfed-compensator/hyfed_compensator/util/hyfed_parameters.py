@@ -32,6 +32,7 @@ class Parameter:
     PROJECT = "project_parameter"
     COMPENSATION = "compensation_parameter"
     MONITORING = "monitoring_parameter"
+    DATA_TYPE = "data_type_parameter"
 
 
 class AuthenticationParameter:

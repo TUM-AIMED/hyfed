@@ -22,7 +22,7 @@ class Parameter:
         There are nine general categories of the parameters exchanged clients <-> server and client <-> compensator:
         client -> server: authentication, synchronization, monitoring, and local parameters
         server -> client: coordination, project, and global parameters
-        client -> compensator: authentication, synchronization, connection, and compensation parameters
+        client -> compensator: authentication, synchronization, connection, data_type, and compensation parameters
         compensator -> client: synchronization parameters
     """
 
@@ -35,6 +35,7 @@ class Parameter:
     GLOBAL = "global_parameter"
     LOCAL = "local_parameter"
     COMPENSATION = "compensation_parameter"
+    DATA_TYPE = "data_type_parameter"
 
 
 class AuthenticationParameter:

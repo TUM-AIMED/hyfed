@@ -124,6 +124,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "stats_webapp"
+    }
+  },
+  "defaultProject": "stats_webapp",
+  "cli": {
+    "analytics": false
+  }
 }

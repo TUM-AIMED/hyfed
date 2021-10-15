@@ -138,13 +138,25 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+*.zip
 .idea
 hyfed-client/hyfed_client/log/*
 hyfed-client/my_tool_client/log/*
 hyfed-client/stats_client/log/*
+hyfed-client/.idea
+hyfed-client/venv
+hyfed-client/test_client.py
 
 hyfed-compensator/hyfed_compensator/log/*
+hyfed-compensator/venv
+hyfed-compensator/test_compensator.py
+
 hyfed-server/hyfed_server/log/*
+hyfed-server/venv
+hyfed-server/stats_server/result
+hyfed-server/hyfed_server/migrations/
+hyfed-server/my_tool_server/migrations/
+hyfed-server/stats_server/migrations/
 
 hyfed-webapp/stats_webapp/node_modules
 hyfed-webapp/my_tool_webapp/node_modules

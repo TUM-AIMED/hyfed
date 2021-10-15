@@ -60,6 +60,9 @@ class HyFedCompensatorProject:
         # compensation parameters (noise values) from the clients
         self.client_compensation_parameters = list()
 
+        # data type parameters from clients
+        self.client_data_type_parameters = list()
+
         # clients tell compensator where to send the aggregated noise values
         self.server_urls = list()
 
@@ -104,6 +107,7 @@ class HyFedCompensatorProject:
             sync_parameters = request_body[Parameter.SYNCHRONIZATION]
             compensation_parameters = request_body[Parameter.COMPENSATION]
             connection_parameters = request_body[Parameter.CONNECTION]
+            data_type_parameters = request_body[Parameter.DATA_TYPE]
 
             # authentication parameters
             hash_username = authentication_parameters[AuthenticationParameter.HASH_USERNAME]
@@ -123,6 +127,7 @@ class HyFedCompensatorProject:
             self.client_comm_rounds.append(comm_round)
             self.server_urls.append(server_url)
             self.client_compensation_parameters.append(compensation_parameters)
+            self.client_data_type_parameters.append(data_type_parameters)
 
             self.computation_timer.stop()
 
@@ -166,7 +171,8 @@ class HyFedCompensatorProject:
             # aggregate the compensation parameters
             for parameter_name in self.client_compensation_parameters[0].keys():
                 compensation_values = self.compensation_parameter_to_list(parameter_name)
-                aggregated_compensation_value = aggregate(compensation_values)
+                parameter_data_type = self.client_data_type_parameters[0][parameter_name]
+                aggregated_compensation_value = aggregate(compensation_values, parameter_data_type)
                 self.aggregated_compensation_parameters[parameter_name] = -aggregated_compensation_value
 
             self.computation_timer.stop()
@@ -225,6 +231,7 @@ class HyFedCompensatorProject:
         self.client_steps = list()
         self.client_comm_rounds = list()
         self.client_compensation_parameters = list()
+        self.client_data_type_parameters = list()
         self.server_urls = list()
         self.aggregated_compensation_parameters = dict()
 
@@ -298,6 +305,21 @@ class HyFedCompensatorProject:
             return True
         except Exception as compensation_param_exp:
             logger.error(f'Project {self.project_id_hash}: Checking compensation parameter names was failed!')
+            logger.error(f'Project {self.project_id_hash}: The exception is: {compensation_param_exp}')
+            return False
+
+    def is_client_data_type_parameters_ok(self):
+        """ Make sure the names of the data type parameters are consistent across clients """
+        try:
+            logger.debug(f"Project {self.project_id_hash}: checking whether data type parameter names are consistent across all clients ...")
+            client1_data_type_parameter_names = self.client_data_type_parameters[0].keys()
+            for client_parameters in self.client_data_type_parameters:
+                if client_parameters.keys() != client1_data_type_parameter_names:
+                    return False
+
+            return True
+        except Exception as compensation_param_exp:
+            logger.error(f'Project {self.project_id_hash}: Checking data type parameter names was failed!')
             logger.error(f'Project {self.project_id_hash}: The exception is: {compensation_param_exp}')
             return False
 

@@ -15,7 +15,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from hyfed_client.util.gui import add_button
 
 import tkinter as tk

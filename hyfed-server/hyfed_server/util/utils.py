@@ -16,8 +16,37 @@
     limitations under the License.
 """
 
+from hyfed_server.util.data_type import DataType
+import numpy as np
+
 import logging
 logger = logging.getLogger(__name__)
+
+
+largest_prime_non_negative_int54 = 18014398509481951  # largest prime number that can fit in 54-bit integer
+
+
+def aggregate_parameters(noisy_parameters, data_type):
+    """ Aggregate the noisy parameter values from the clients """
+
+    # if  noisy parameter values is not a list or is an empty list
+    if not type(noisy_parameters) == list or not noisy_parameters:
+        return None
+
+    if data_type == DataType.NON_NEGATIVE_INTEGER:
+        return np.sum(noisy_parameters) % largest_prime_non_negative_int54  # modular arithmetic
+
+    if data_type == DataType.NEGATIVE_INTEGER or data_type == DataType.FLOAT:
+        return np.sum(noisy_parameters)
+
+    if data_type == DataType.NUMPY_ARRAY_NON_NEGATIVE_INTEGER or data_type == DataType.LIST_NUMPY_ARRAY_NON_NEGATIVE_INTEGER:
+        return np.sum(noisy_parameters, axis=0) % largest_prime_non_negative_int54
+
+    if data_type == DataType.NUMPY_ARRAY_NEGATIVE_INTEGER or data_type == DataType.NUMPY_ARRAY_FLOAT or \
+            data_type == DataType.LIST_NUMPY_ARRAY_NEGATIVE_INTEGER or data_type == DataType.LIST_NUMPY_ARRAY_FLOAT:
+        return np.sum(noisy_parameters, axis=0)
+
+    return None
 
 
 def client_parameters_to_list(parameter_dict, parameter_name):
