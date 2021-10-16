@@ -877,7 +877,9 @@ On the client side, the function opens the dataset file, initialize the **x_matr
 On the server side, the function aggregates the local sample counts to compute the global sample count and sets the next project step depending on the algorithm name. Notice the use 
    of the set_compensator_flag function, which directs the HyFed client API to make the local parameter(s) (i.e. sample_count) noisy, and to send the noise and noisy parameters to 
    the compensator and server, respectively. Without using the set_compensator_flag function, the original values of the local parameters are shared with the server, which is not
-   a good privacy practice.
+   a good privacy practice. The set_compensator_flag function takes as input a dictionary specifying the data type of each parameter. 
+   On the server side, the data type of the client parameters must be specified for aggregation too. The valid data types are: NON_NEGATIVE_INTEGER, NEGATIVE_INTEGER,
+   FLOAT, NUMPY_ARRAY_NON_NEGATIVE_INTEGER, NUMPY_ARRAY_NEGATIVE_INTEGER, NUMPY_ARRAY_FLOAT, LIST_NUMPY_ARRAY_NON_NEGATIVE_INTEGER, LIST_NUMPY_ARRAY_NEGATIVE_INTEGER, LIST_NUMPY_ARRAY_FLOAT
     ```
     # stats_client/project/stats_client_project.py
    
@@ -900,7 +902,7 @@ On the server side, the function aggregates the local sample counts to compute t
             sample_count = self.x_matrix.shape[0]
 
             # share the noisy sample count with the server and noise with the compensator
-            self.set_compensator_flag()
+            self.set_compensator_flag({StatsLocalParameter.SAMPLE_COUNT: DataType.NON_NEGATIVE_INTEGER})
             self.local_parameters[StatsLocalParameter.SAMPLE_COUNT] = sample_count
 
         except Exception as io_exception:
@@ -921,8 +923,7 @@ On the server side, the function aggregates the local sample counts to compute t
 
         try:
             # get the sample counts from the clients and compute global sample count, which is used in the next steps
-            sample_counts = client_parameters_to_list(self.local_parameters, StatsLocalParameter.SAMPLE_COUNT)
-            self.global_sample_count = np.sum(sample_counts)
+            self.global_sample_count = self.compute_aggregated_parameter(StatsLocalParameter.SAMPLE_COUNT, DataType.NON_NEGATIVE_INTEGER)
 
             # decide on the next step based on the algorithm name
             if self.algorithm == StatsAlgorithm.VARIANCE:
@@ -958,7 +959,7 @@ On the server side, the function aggregates the local sample counts to compute t
             sample_sum = np.sum(self.x_matrix, axis=0)
 
             # hide the original value of the sample sum from the server
-            self.set_compensator_flag()
+            self.set_compensator_flag({StatsLocalParameter.SUM:DataType.NUMPY_ARRAY_FLOAT})
             self.local_parameters[StatsLocalParameter.SUM] = sample_sum
     
         except Exception as sum_exception:
@@ -978,8 +979,7 @@ On the server side, the function aggregates the local sample counts to compute t
 
         try:
             # get the sample sums from the clients and compute the global mean
-            sample_sums = client_parameters_to_list(self.local_parameters, StatsLocalParameter.SUM)
-            self.global_mean = np.sum(sample_sums, axis=0) / self.global_sample_count
+            self.global_mean = self.compute_aggregated_parameter(StatsLocalParameter.SUM, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # tell clients to go to the SSE step
             self.set_step(StatsProjectStep.SSE)
@@ -1012,7 +1012,7 @@ the variance algorithm, the server side function first prepares the results, and
             sse = np.sum(np.square(self.x_matrix - global_mean), axis=0)
 
             # hide the sse value from the server
-            self.set_compensator_flag()
+            self.set_compensator_flag({StatsLocalParameter.SSE: DataType.NUMPY_ARRAY_FLOAT})
             self.local_parameters[StatsLocalParameter.SSE] = sse
 
         except Exception as sse_exception:
@@ -1032,8 +1032,7 @@ the variance algorithm, the server side function first prepares the results, and
 
         try:
             # get the sum square error values from the clients and compute the global variance
-            client_sse_list = client_parameters_to_list(self.local_parameters, StatsLocalParameter.SSE)
-            self.global_variance = np.sum(client_sse_list, axis=0) / self.global_sample_count
+            self.global_variance = self.compute_aggregated_parameter(StatsLocalParameter.SSE, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # this is the last computational step of the variance algorithm, so prepare the results
             self.prepare_results()
@@ -1076,7 +1075,7 @@ the variance algorithm, the server side function first prepares the results, and
             weighted_local_beta = local_sample_count * local_beta
 
             # hide the weighted local beta values from the server
-            self.set_compensator_flag()
+            self.set_compensator_flag({StatsLocalParameter.BETA: DataType.NUMPY_ARRAY_FLOAT})
             self.local_parameters[StatsLocalParameter.BETA] = weighted_local_beta
 
         except Exception as beta_exception:
@@ -1095,8 +1094,7 @@ the variance algorithm, the server side function first prepares the results, and
 
         try:
             # get the weighted local betas from the clients, compute the global beta
-            weighted_betas = client_parameters_to_list(self.local_parameters, StatsLocalParameter.BETA)
-            self.global_beta = np.sum(weighted_betas, axis=0) / self.global_sample_count
+            self.global_beta  = self.compute_aggregated_parameter(StatsLocalParameter.BETA, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # if this is the last iteration, then prepare the results and tell clients to go to the Result step
             if self.current_iteration == self.max_iterations:
