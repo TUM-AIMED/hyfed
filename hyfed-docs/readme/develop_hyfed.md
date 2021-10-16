@@ -879,7 +879,7 @@ On the server side, the function aggregates the local sample counts to compute t
    the compensator and server, respectively. Without using the set_compensator_flag function, the original values of the local parameters are shared with the server, which is not
    a good privacy practice. The set_compensator_flag function takes as input a dictionary specifying the data type of each parameter. 
    On the server side, the data type of the client parameters must be specified for aggregation too. The valid data types are: NON_NEGATIVE_INTEGER, NEGATIVE_INTEGER,
-   FLOAT, NUMPY_ARRAY_NON_NEGATIVE_INTEGER, NUMPY_ARRAY_NEGATIVE_INTEGER, NUMPY_ARRAY_FLOAT, LIST_NUMPY_ARRAY_NON_NEGATIVE_INTEGER, LIST_NUMPY_ARRAY_NEGATIVE_INTEGER, LIST_NUMPY_ARRAY_FLOAT
+   FLOAT, NUMPY_ARRAY_NON_NEGATIVE_INTEGER, NUMPY_ARRAY_NEGATIVE_INTEGER, NUMPY_ARRAY_FLOAT, LIST_NUMPY_ARRAY_NON_NEGATIVE_INTEGER, LIST_NUMPY_ARRAY_NEGATIVE_INTEGER, and LIST_NUMPY_ARRAY_FLOAT;
     ```
     # stats_client/project/stats_client_project.py
    
