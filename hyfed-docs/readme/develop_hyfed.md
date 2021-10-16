@@ -922,7 +922,7 @@ On the server side, the function aggregates the local sample counts to compute t
         """  Init step of Stats at the server side """
 
         try:
-            # get the sample counts from the clients and compute global sample count, which is used in the next steps
+            # compute global sample count, which is used in the next steps
             self.global_sample_count = self.compute_aggregated_parameter(StatsLocalParameter.SAMPLE_COUNT, DataType.NON_NEGATIVE_INTEGER)
 
             # decide on the next step based on the algorithm name
@@ -978,7 +978,7 @@ On the server side, the function aggregates the local sample counts to compute t
     """ Aggregate the sample sums from the clients to compute global mean """
 
         try:
-            # get the sample sums from the clients and compute the global mean
+            # Compute the global mean
             self.global_mean = self.compute_aggregated_parameter(StatsLocalParameter.SUM, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # tell clients to go to the SSE step
@@ -1031,7 +1031,7 @@ the variance algorithm, the server side function first prepares the results, and
     """ Aggregate the sum square error values from the clients to compute global variance """
 
         try:
-            # get the sum square error values from the clients and compute the global variance
+            # Compute the global variance
             self.global_variance = self.compute_aggregated_parameter(StatsLocalParameter.SSE, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # this is the last computational step of the variance algorithm, so prepare the results
@@ -1093,7 +1093,7 @@ the variance algorithm, the server side function first prepares the results, and
         """ Aggregate the local betas from the clients to compute global beta """
 
         try:
-            # get the weighted local betas from the clients, compute the global beta
+            # Ccompute the global beta in the current iteration
             self.global_beta  = self.compute_aggregated_parameter(StatsLocalParameter.BETA, DataType.NUMPY_ARRAY_FLOAT) / self.global_sample_count
 
             # if this is the last iteration, then prepare the results and tell clients to go to the Result step
