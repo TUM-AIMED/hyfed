@@ -334,6 +334,21 @@ in **StatsProjectModel**. We define the **StatsProjectParameter** and **StatsAlg
         FEATURES = "features"
         LEARNING_RATE = "learning_rate"
         MAX_ITERATIONS = "max_iterations"
+
+    class StatsLocalParameter:
+    """ Name of the local (client -> server) parameters """
+
+    SAMPLE_COUNT = "local_sample_count"  # variance and logistic regression algorithms
+    SUM = "local_sum"  # variance algorithm
+    SSE = "local_sse"  # variance algorithm
+    BETA = "local_beta"  # logistic regression algorithm
+
+
+    class StatsGlobalParameter:
+    """ Name of the global (server -> client) parameters """
+
+    MEAN = "global_mean"  # variance algorithm
+    BETA = "global_beta"  # logistic regression algorithm
     ```
    
     ```
